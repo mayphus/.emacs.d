@@ -377,9 +377,9 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (corfu-auto t)
   (corfu-auto-delay 0.0)
   (corfu-auto-prefix 2)
-  ;;(corfu-preview-current nil)
+  (corfu-preview-current nil)
   (corfu-preselect 'prompt)
-  ;;(corfu-on-exact-match nil)
+  (corfu-on-exact-match nil)
   :init
   (global-corfu-mode)
   :hook
