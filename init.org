@@ -526,8 +526,9 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   ;; custom multi directories to hold different notes
   (setq denote-directories
         (list (expand-file-name "notes" org-directory)
+              (expand-file-name "articles" org-directory)
               (expand-file-name "kid" org-directory)
-              (expand-file-name "articles" org-directory)))
+	      (expand-file-name "projects" org-directory)))
 
   (defun mayphus/denote ()
     "Create a note with denote, defaulting to the 'notes' directory."
