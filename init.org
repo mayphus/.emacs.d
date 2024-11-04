@@ -165,7 +165,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
             :branch "master")
   :init
   (setq awesome-tray-active-modules
-	'("location" "belong" "file-path" "mode-name"))
+	'("file-path" "mode-name"))
   (awesome-tray-mode))
 #+end_src
 
