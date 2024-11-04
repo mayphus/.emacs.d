@@ -145,7 +145,16 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   :custom
   (auto-dark-themes '((modus-vivendi) (modus-operandi)))
   :init
-  (auto-dark-mode))
+  (auto-dark-mode)
+  :hook
+  (auto-dark-dark-mode . (lambda ()
+                            ;;(setq awesome-tray-mode-line-active-color "green")
+                            ;;(setq awesome-tray-mode-line-inactive-color "dimgray")
+                            (awesome-tray-mode)))
+  (auto-dark-light-mode . (lambda ()
+                            ;;(setq awesome-tray-mode-line-active-color "green")
+                            ;;(setq awesome-tray-mode-line-inactive-color "gray")
+                            (awesome-tray-mode))))
 #+end_src
 
 * awesome-tray
@@ -159,6 +168,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 	'("location" "belong" "file-path" "mode-name"))
   (awesome-tray-mode))
 #+end_src
+
 * which-key
 #+begin_src emacs-lisp
 (use-package which-key
