@@ -1,0 +1,54 @@
+#+TITLE: Mayphus Tang's Personal Emacs Configuration
+
+This is my personal Emacs configuration, tailored for productivity, and enhanced functionality across various domains including programming, note-taking, and project or task management. My configuration focus on native, simple and easy to understand for hacking.
+
+* Installation
+To use this configuration:
+
+1. Clone this repository to your ~.emacs.d~ directory
+2. I use master emacs, feel free to test older, stable versions
+3. Launch Emacs - packages should automatically install
+
+* Key Features
+** Package Management
+- Uses ~package.el~ for package management
+- Leverages MELPA for a wide range of packages
+- Employs ~use-package~ for organized and lazy-loaded package configuration
+
+** Productivity Enhancements
+- Org mode for note-taking, task management, and literate programming
+- Magit for Git integration
+- Company for auto-completion
+- Yasnippet for code snippets
+
+** Programming Support
+- LSP mode for language server protocol support
+- Multiple language modes (Python, Lisp, Rust, etc.)
+- Flycheck for on-the-fly syntax checking
+
+** UI Improvements
+- Which-key for discovering keybindings
+- Vertico, Marginalia, and Consult for enhanced minibuffer completion
+
+** Custom Functionality
+- Custom functions for some custom utilities
+
+* Package List
+For a full list of packages, see the ~package-selected-packages~ variable in ~init-package.el~.
+
+* Configuration Structure
+- ~init.el~: Main initialization file
+- ~lisp/~: Directory containing modular configuration files
+  - ~init-package.el~: Package management setup
+  - ~init-org.el~: Org mode configuration
+  - ~init-ui.el~: User interface settings
+  - ... (other specialized configuration files)
+
+* Resources
+- [Org mode official website](https://orgmode.org/)
+- [MELPA package archive](https://melpa.org/)
+- [Use-package documentation](https://github.com/jwiegley/use-package)
+  - [package-vc]()
+
+* License
+This configuration is released under the MIT License. See the LICENSE file for details.

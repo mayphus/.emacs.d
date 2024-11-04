@@ -1,0 +1,545 @@
+#+TITLE: Mayphus Tang's Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle yes :results none
+
+* Startup
+run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
+
+** org-babel-tangle-init-on-save
+#+begin_src emacs-lisp
+(use-package emacs
+  :init
+  (defun org-babel-tangle-init-on-save ()
+    "Automatically tangle `init.org` upon saving."
+    (when (string= (buffer-file-name)
+                   (expand-file-name "~/.emacs.d/init.org"))
+      (org-babel-tangle)))
+  (add-hook 'after-save-hook 'org-babel-tangle-init-on-save))
+#+end_src
+
+** load-path
+#+begin_src emacs-lisp
+(use-package emacs
+  :init
+  (defun my/add-folder-to-load-path (folder)
+    "Add FOLDER and its subdirectories to the `load-path'."
+    (let ((default-directory folder))
+      (normal-top-level-add-to-load-path '("."))
+      (normal-top-level-add-subdirs-to-load-path)))
+  (my/add-folder-to-load-path (expand-file-name "lisp" user-emacs-directory)))
+#+end_src
+
+** gc
+#+begin_src emacs-lisp
+(use-package emacs
+  :init
+  (defun my/set-gc-threshold ()
+    "Set `gc-cons-threshold' to a more reasonable value after startup."
+    (setq gc-cons-threshold (* 32 1024 1024)
+          gc-cons-percentage 0.1))
+
+  (let ((gc-cons-threshold most-positive-fixnum)
+        (gc-cons-percentage 0.6))
+    (add-hook 'emacs-startup-hook #'my/set-gc-threshold)
+    (add-hook 'minibuffer-setup-hook
+	      (lambda () (setq gc-cons-threshold most-positive-fixnum)))
+    (add-hook 'minibuffer-exit-hook #'my/set-gc-threshold)))
+#+end_src
+
+** server-start
+#+begin_src emacs-lisp
+(use-package server
+  :if (daemonp)
+  :config
+  (server-start))
+#+end_src
+
+** exec-path-from-shell
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :custom
+  (exec-path-from-shell-warn-duration-millis 12000)
+  :config
+  (condition-case nil
+      (exec-path-from-shell-initialize)
+    (error (message "Failed to initialize exec-path-from-shell"))))
+#+end_src
+
+** private.el
+#+begin_src emacs-lisp
+(use-package emacs
+  :if (file-exists-p (expand-file-name "init-private.el" user-emacs-directory))
+  :init
+  (setq private-file (expand-file-name "init-private.el" user-emacs-directory))
+  (load private-file))
+#+end_src
+
+** custom.el
+#+begin_src emacs-lisp
+(use-package emacs
+  :init
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file)))
+#+end_src
+
+** common
+#+begin_src emacs-lisp
+(use-package emacs
+  :init
+  (setq inhibit-startup-message t
+        initial-scratch-message ""
+        default-frame-alist '((height . 50))
+        ring-bell-function 'ignore
+        backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+        auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory "auto-save/") t))
+        create-lockfiles nil
+        async-shell-command-buffer 'new-buffer
+        workspace-directory (expand-file-name "workspaces" "~"))
+  
+  (make-directory (concat user-emacs-directory "backups") t)
+  (make-directory (concat user-emacs-directory "auto-save") t)
+  
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  
+  (global-visual-line-mode)
+  (midnight-mode)
+  
+  (when (executable-find "gls")
+    (setq insert-directory-program "gls" dired-use-ls-dired t))
+  
+  (byte-compile-disable-warning 'obsolete)
+
+  (global-auto-revert-mode)
+  
+  :bind
+  (("C-s-f" . toggle-frame-fullscreen)))
+#+end_src
+
+** package
+#+begin_src emacs-lisp
+(use-package package
+  :init
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("gnu" . "https://elpa.gnu.org/packages/")))
+  (package-initialize))
+#+end_src
+
+* Theme
+** modus-themes
+#+begin_src emacs-lisp
+(use-package emacs
+  :custom
+  (modus-themes-common-palette-overrides
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified))))
+#+end_src
+
+** auto-dark
+#+begin_src emacs-lisp
+(use-package auto-dark
+  :ensure t
+  :custom
+  (auto-dark-themes '((modus-vivendi) (modus-operandi)))
+  :init
+  (auto-dark-mode))
+#+end_src
+
+* awesome-tray
+#+begin_src emacs-lisp
+(use-package awesome-tray
+  :vc (:url "https://github.com/manateelazycat/awesome-tray"
+	    :rev :newest
+            :branch "master")
+  :init
+  (setq awesome-tray-active-modules
+	'("location" "belong" "file-path" "mode-name"))
+  (awesome-tray-mode))
+#+end_src
+* which-key
+#+begin_src emacs-lisp
+(use-package which-key
+  :ensure t
+  :hook (after-init . which-key-mode))
+#+end_src
+
+* vertico
+#+begin_src emacs-lisp
+(use-package vertico
+  :ensure t
+  :custom
+  ;; (vertico-scroll-margin 0) ;; Different scroll margin
+  ;; (vertico-count 20) ;; Show more candidates
+  (vertico-resize t)
+  ;; (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  :init
+  (vertico-mode))
+#+end_src
+
+** vertico-directory
+#+begin_src emacs-lisp
+(use-package vertico-directory
+  :after vertico
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+#+end_src
+
+* marginalia
+#+begin_src emacs-lisp
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+#+end_src
+
+* TODO Embark
+** embark
+#+begin_src emacs-lisp
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+#+end_src
+
+** embark-consult
+#+begin_src emacs-lisp
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
+* consult
+#+begin_src emacs-lisp
+(use-package consult
+  :ensure t
+  :bind (("C-s" . consult-line)
+         ("C-x /" . consult-ripgrep))
+  :config
+  ;; Uncomment and adjust the following line if needed:
+  ;; (setq consult-notes-dir denote-directory)
+  )
+#+end_src
+
+* expand-region
+#+begin_src emacs-lisp
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+#+end_src
+
+* smartparens
+#+begin_src emacs-lisp
+(use-package smartparens
+  :ensure smartparens
+  :hook (prog-mode text-mode markdown-mode org-mode)
+  :config
+  (require 'smartparens-config))
+#+end_src
+
+* hungry-delete
+#+begin_src emacs-lisp
+(use-package hungry-delete
+  :ensure t
+  :hook
+  (prog-mode . hungry-delete-mode)
+  (org-mode . hungry-delete-mode))
+#+end_src
+
+* smart-hungry-delete
+#+begin_src emacs-lisp
+(use-package smart-hungry-delete
+  :ensure t
+  :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+	       ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+	       ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init (smart-hungry-delete-add-default-hooks))
+#+end_src
+
+* Magit
+** magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+#+end_src
+
+** magit-todo
+#+begin_src emacs-lisp
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config (magit-todos-mode 1))
+#+end_src
+
+* tramp
+#+begin_src emacs-lisp
+(use-package tramp
+  :custom
+  (tramp-remote-path (append tramp-remote-path
+                             '(tramp-own-remote-path))))
+#+end_src
+
+* Yasnippet
+** yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :init
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+  :config
+  (yas-global-mode 1))
+#+end_src
+
+** yasnippet-snippets
+#+begin_src emacs-lisp
+(use-package yasnippet-snippets
+  :ensure t
+  :after yasnippet)
+#+end_src
+
+** yatemplate
+#+begin_src emacs-lisp
+(use-package yatemplate
+  :ensure t
+  :after yasnippet)
+#+end_src
+
+* Completion
+** eglot
+#+begin_src emacs-lisp :tangle no
+(use-package eglot
+  :hook ((prog-mode . eglot-ensure))
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-sync-connect nil)
+  :config
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) . ("clangd"))))
+#+end_src
+
+** orderless
+#+begin_src emacs-lisp
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  ;;(completion-category-overrides '((file (styles basic partial-completion))))
+  (completion-category-overrides '((eglot (styles . (partial-completion)))))
+  )
+#+end_src
+
+** corfu
+#+begin_src emacs-lisp
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.0)
+  (corfu-auto-prefix 2)
+  ;;(corfu-preview-current nil)
+  (corfu-preselect 'prompt)
+  ;;(corfu-on-exact-match nil)
+  :init
+  (global-corfu-mode)
+  :hook
+  (prog-mode . corfu-mode)
+  (shell-mode . corfu-mode)
+  (eshell-mode . corfu-mode))
+#+end_src
+
+* AI
+** copilot.el
+#+begin_src emacs-lisp
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main")
+  :hook
+  (prog-mode . copilot-mode)
+  (org-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("<TAB>" . copilot-accept-completion)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-<tab>" . copilot-accept-completion-by-word))
+  :config
+  ;; Add indentation settings for different modes
+  (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+  (add-to-list 'copilot-indentation-alist '(org-mode 2))
+  (add-to-list 'copilot-indentation-alist '(text-mode 2))
+  (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+#+end_src
+
+*** copilot-chat.el
+#+begin_src emacs-lisp
+(use-package copilot-chat
+  :ensure t
+  :init
+  (setq copilot-chat-frontend 'org)
+  ;; :hook
+  ;; (git-commit-setup 'copilot-chat-insert-commit-message)
+  )
+#+end_src
+
+** whisper
+#+begin_src emacs-lisp :tangle no
+(use-package whisper
+  :custom
+  (whisper-api-key groq-api-key))
+#+end_src
+
+** aider
+#+begin_src emacs-lisp :tangle no
+(use-package aide
+  :vc (:url "https://github.com/junjizhi/aide.el"
+            :rev :newest
+            :branch "master"))
+#+end_src
+
+** gptel
+#+begin_src emacs-lisp
+(use-package gptel
+  :ensure t
+  :config
+  (setq gptel-model 'llama-3.1-70b-versatile)
+  (setq gptel-backend
+    (gptel-make-openai "Groq" ;; default backend
+      :host "api.groq.com"
+      :endpoint "/openai/v1/chat/completions"
+      :stream t
+      :key groq-api-key
+      :models '(llama-3.2-90b-vision-preview
+                llama-3.1-70b-versatile)))
+
+  (setq gptel-backend--openrouter
+    (gptel-make-openai "OpenRouter" ;; alternative backend
+      :host "openrouter.ai"
+      :endpoint "/api/v1/chat/completions"
+      :stream t
+      :key openrouter-api-key
+      :models '(anthropic/claude-3.5-sonnet)))
+
+  :custom
+  (gptel-use-header-line nil)
+  :bind
+  ("s-i" . gptel-menu))
+#+end_src
+
+** elysium
+#+begin_src emacs-lisp
+(use-package elysium
+  :ensure t
+  :config
+  (defun mayphus/elysium-query (user-query)
+    "Query Elysium with USER-QUERY using OpenRouter's Claude 3.5 Sonnet."
+    (interactive "sQuery Elysium: ")
+    (let ((gptel-backend #'gptel-backend--openrouter)
+          (gptel-model "anthropic/claude-3.5-sonnet"))
+      (gptel-request
+       user-query)))
+  :bind ("s-I" . mayphus/elysium-query))
+#+end_src
+
+*** smerge-mode
+#+begin_src emacs-lisp
+(use-package smerge-mode
+  :ensure nil
+  :hook
+  (prog-mode . smerge-mode))
+#+end_src
+
+** TODO evedel
+#+begin_src emacs-lisp :tangle no
+(use-package evedel
+  :disabled t
+  :vc (:url "https://github.com/daedsidog/evedel"
+            :rev :newest
+            :branch "main"))
+#+end_src
+
+* Org
+** org
+#+begin_src emacs-lisp
+(use-package org
+  :hook
+  (org-mode . org-indent-mode)
+  :config
+  (setq org-src-preserve-indentation t)
+  (setq org-directory (expand-file-name "org" workspace-directory)))
+#+end_src
+
+** org-babel
+#+begin_src emacs-lisp
+(use-package org
+  :config
+  (setq org-babel-python-command "python3")
+  (setq org-confirm-babel-evaluate nil))
+#+end_src
+
+** TODO org-super-links
+** TODO org-super-agenda
+
+** denote
+#+begin_src emacs-lisp
+(use-package denote
+  :ensure t
+  :config
+  ;; make org-directory and it's sub folders be denote dired directories
+  (setq denote-dired-directories-include-subdirectories t)
+  (setq denote-dired-directories
+        (list org-directory))
+
+  ;; make notes directory the default directory for denote
+  (setq denote-directory (expand-file-name "notes" org-directory))
+
+  ;; custom multi directories to hold different notes
+  (setq denote-directories
+        (list (expand-file-name "notes" org-directory)
+              (expand-file-name "kid" org-directory)
+              (expand-file-name "articles" org-directory)))
+
+  (defun mayphus/denote ()
+    "Create a note with denote, defaulting to the 'notes' directory."
+    (interactive)
+    (let* ((dirs denote-directories)
+           (default-dir (expand-file-name "notes" org-directory))
+           (dir (completing-read "Create content in: " dirs nil t default-dir)))
+      (let ((denote-directory dir))
+        (call-interactively #'denote))))
+
+  :hook (dired-mode . denote-dired-mode-in-directories)
+  :bind (("C-c n n" . mayphus/denote)
+         ("C-c n l" . denote-link)
+         ("C-c n r" . denote-rename-file)))
+#+end_src
