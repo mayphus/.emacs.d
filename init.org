@@ -48,7 +48,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 ** server-start
 #+begin_src emacs-lisp
 (use-package server
-  :if (daemonp)
+  :if (and (not (daemonp)) (display-graphic-p))
   :config
   (server-start))
 #+end_src
@@ -86,36 +86,40 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 
 ** common
 #+begin_src emacs-lisp
-(use-package emacs
-  :init
-  (setq inhibit-startup-message t
-        initial-scratch-message ""
-        default-frame-alist '((height . 50))
-        ring-bell-function 'ignore
-        backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-        auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory "auto-save/") t))
-        create-lockfiles nil
-        async-shell-command-buffer 'new-buffer
-        workspace-directory (expand-file-name "workspaces" "~"))
-  
-  (make-directory (concat user-emacs-directory "backups") t)
-  (make-directory (concat user-emacs-directory "auto-save") t)
-  
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  
-  (global-visual-line-mode)
-  (midnight-mode)
-  
-  (when (executable-find "gls")
-    (setq insert-directory-program "gls" dired-use-ls-dired t))
-  
-  (byte-compile-disable-warning 'obsolete)
+  (use-package emacs
+    :init
+    (setq inhibit-startup-message t
+          initial-scratch-message ""
+          ;;default-frame-alist '((height . 50))
+          ring-bell-function 'ignore
+          backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+          auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory "auto-save/") t))
+          create-lockfiles nil
+          async-shell-command-buffer 'new-buffer
+          workspace-directory (expand-file-name "workspaces" "~"))
+    
+    (make-directory (concat user-emacs-directory "backups") t)
+    (make-directory (concat user-emacs-directory "auto-save") t)
+    
+    (if (display-graphic-p)
+        (progn
+          (menu-bar-mode -1)
+          (scroll-bar-mode -1)
+  	(tool-bar-mode -1))
+      (menu-bar-mode -1))
+    
+    (global-visual-line-mode)
+    (midnight-mode)
+    
+    (when (executable-find "gls")
+      (setq insert-directory-program "gls" dired-use-ls-dired t))
+    
+    (byte-compile-disable-warning 'obsolete)
 
-  (global-auto-revert-mode)
-  
-  :bind
-  (("C-s-f" . toggle-frame-fullscreen)))
+    (global-auto-revert-mode)
+    
+    :bind
+    (("C-s-f" . toggle-frame-fullscreen)))
 #+end_src
 
 ** package
@@ -128,9 +132,14 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (package-initialize))
 #+end_src
 
+* mayphus
+#+begin_src emacs-lisp
+(use-package mayphus)
+#+end_src
+
 * Theme
 ** modus-themes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package emacs
   :custom
   (modus-themes-common-palette-overrides
@@ -139,34 +148,21 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 #+end_src
 
 ** auto-dark
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package auto-dark
   :ensure t
   :custom
   (auto-dark-themes '((modus-vivendi) (modus-operandi)))
+  (auto-dark-allow-osascript t)
   :init
-  (auto-dark-mode)
-  :hook
-  (auto-dark-dark-mode . (lambda ()
-                            ;;(setq awesome-tray-mode-line-active-color "green")
-                            ;;(setq awesome-tray-mode-line-inactive-color "dimgray")
-                            (awesome-tray-mode)))
-  (auto-dark-light-mode . (lambda ()
-                            ;;(setq awesome-tray-mode-line-active-color "green")
-                            ;;(setq awesome-tray-mode-line-inactive-color "gray")
-                            (awesome-tray-mode))))
+  (auto-dark-mode))
 #+end_src
 
-* awesome-tray
+** mini-echo
 #+begin_src emacs-lisp
-(use-package awesome-tray
-  :vc (:url "https://github.com/manateelazycat/awesome-tray"
-	    :rev :newest
-            :branch "master")
-  :init
-  (setq awesome-tray-active-modules
-	'("file-path" "mode-name"))
-  (awesome-tray-mode))
+(use-package mini-echo
+  :ensure t
+  :init (mini-echo-mode))
 #+end_src
 
 * which-key
@@ -348,7 +344,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 
 * Completion
 ** eglot
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package eglot
   :hook ((prog-mode . eglot-ensure))
   :custom
@@ -474,7 +470,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (defun mayphus/elysium-query (user-query)
     "Query Elysium with USER-QUERY using OpenRouter's Claude 3.5 Sonnet."
     (interactive "sQuery Elysium: ")
-    (let ((gptel-backend #'gptel-backend--openrouter)
+    (let ((gptel-backend gptel-backend--openrouter)
           (gptel-model "anthropic/claude-3.5-sonnet"))
       (gptel-request
        user-query)))
@@ -517,6 +513,87 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (setq org-confirm-babel-evaluate nil))
 #+end_src
 
+** org-capture
+#+begin_src emacs-lisp
+(use-package org-capture
+  :config
+  (setq org-capture-templates
+        '(;; input
+          ("t" "Todo" entry
+           (file "~/workspaces/org/inbox/gtd.org")
+           "* TODO %?\n%U\n%a\n%i" :prepend t)
+          ("i" "Inbox" entry
+           (file "~/workspaces/org/inbox/inbox.org")
+           "* %?\n%U\n%a\n%i" :prepend t)
+
+          ;; record
+          ("d" "Diet" entry
+           (file "~/workspaces/org/inbox/diet.org")
+           "* %?\n%U\n%i" :prepend t)
+          ("h" "Health" entry
+           (file "~/workspaces/org/inbox/health.org")
+           "* %?\n%U\n%i" :prepend t)
+          ("j" "Journal" entry
+           (file (lambda ()
+                   (let ((weekly-file (format-time-string "~/workspaces/org/journals/journal-%Y-week%V.org")))
+                     (make-directory (file-name-directory weekly-file) t)
+                     weekly-file)))
+           "* %?\n%U\n%a\n%i" :prepend t)
+
+          ;; TODO learn
+          ("l" "Learn" plain 
+           (file (lambda ()
+                   (let* ((topic (completing-read "Select topic: " '("electronics"
+								     "emacs"
+								     "english"
+								     "history"
+								     "logic"
+								     "machenicals"
+								     "mathematics"
+								     "mechanical"
+								     "pcb"
+								     "philosophy")))
+                          (learn-file (expand-file-name (concat (title-to-filename topic) ".org")
+                                                      (expand-file-name "learn" org-directory))))
+                     (make-directory (file-name-directory learn-file) t)
+                     learn-file)))
+           "* %?\n%i" :prepend t)
+
+          ;; output
+          ("n" "Note" plain
+           (file (lambda ()
+                   (let ((note-file (read-string "Note title is: ")))
+                     (let ((note-file (title-to-filename note-file)))
+                       (expand-file-name (concat note-file ".org") 
+                                         (expand-file-name "notes" org-directory))))))
+           "#+title: %?\n#+date: %U\n\n%i" :prepend t)
+          ("N" "Note" plain
+           (file denote-last-path)
+           #'denote-org-capture
+           :no-save t
+           :immediate-finish nil
+           :kill-buffer t
+           :jump-to-captured t)
+          ("a" "Article" plain
+           (file (lambda ()
+                   (let ((article-title (read-string "Article title is: ")))
+                     (let ((article-file (title-to-filename article-title)))
+                       (expand-file-name (concat article-file ".org") 
+                                         (expand-file-name "articles" org-directory))))))
+           "#+title: %?\n#+date: %U\n\n%i" :prepend t)))
+  :bind (("C-c c" . org-capture)))
+#+end_src
+
+** org-agenda
+#+begin_src emacs-lisp
+(use-package org-agenda
+  :config
+  (setq org-agenda-files
+	(list
+	 (expand-file-name "gtd.org" (expand-file-name "inbox" org-directory))
+	 org-directory)))
+#+end_src
+
 ** TODO org-super-links
 ** TODO org-super-agenda
 
@@ -525,30 +602,17 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 (use-package denote
   :ensure t
   :config
-  ;; make org-directory and it's sub folders be denote dired directories
   (setq denote-dired-directories-include-subdirectories t)
   (setq denote-dired-directories
         (list org-directory))
 
-  ;; make notes directory the default directory for denote
   (setq denote-directory (expand-file-name "notes" org-directory))
-
-  ;; custom multi directories to hold different notes
   (setq denote-directories
         (list (expand-file-name "notes" org-directory)
               (expand-file-name "articles" org-directory)))
 
-  (defun mayphus/denote ()
-    "Create a note with denote, defaulting to the 'notes' directory."
-    (interactive)
-    (let* ((dirs denote-directories)
-           (default-dir (expand-file-name "notes" org-directory))
-           (dir (completing-read "Create content in: " dirs nil t default-dir)))
-      (let ((denote-directory dir))
-        (call-interactively #'denote))))
-  
   :hook (dired-mode . denote-dired-mode-in-directories)
-  :bind (("C-c n n" . mayphus/denote)
+  :bind (("C-c n n" . denote)
          ("C-c n l" . denote-link)
          ("C-c n r" . denote-rename-file)))
 #+end_src
