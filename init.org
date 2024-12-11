@@ -139,7 +139,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 
 * Theme
 ** modus-themes
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package emacs
   :custom
   (modus-themes-common-palette-overrides
@@ -148,7 +148,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 #+end_src
 
 ** auto-dark
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package auto-dark
   :ensure t
   :custom
