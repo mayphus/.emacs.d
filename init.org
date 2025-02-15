@@ -2,9 +2,9 @@
 #+PROPERTY: header-args:emacs-lisp :tangle yes :results none
 
 * Startup
-run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
+run this script to make sure =org-babel-tangle= generate ~init.el~ works.
 
-** org-babel-tangle-init-on-save
+** org babel tangle init on save
 #+begin_src emacs-lisp
 (use-package emacs
   :init
@@ -16,16 +16,16 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (add-hook 'after-save-hook 'org-babel-tangle-init-on-save))
 #+end_src
 
-** load-path
+** load path
 #+begin_src emacs-lisp
 (use-package emacs
   :init
-  (defun my/add-folder-to-load-path (folder)
+  (defun add-folder-to-load-path (folder)
     "Add FOLDER and its subdirectories to the `load-path'."
     (let ((default-directory folder))
       (normal-top-level-add-to-load-path '("."))
       (normal-top-level-add-subdirs-to-load-path)))
-  (my/add-folder-to-load-path (expand-file-name "lisp" user-emacs-directory)))
+  (add-folder-to-load-path (expand-file-name "lisp" user-emacs-directory)))
 #+end_src
 
 ** gc
@@ -45,7 +45,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
     (add-hook 'minibuffer-exit-hook #'my/set-gc-threshold)))
 #+end_src
 
-** server-start
+** start server
 #+begin_src emacs-lisp
 (use-package server
   :if (and (not (daemonp)) (display-graphic-p))
@@ -53,7 +53,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (server-start))
 #+end_src
 
-** exec-path-from-shell
+** exec path from shell
 #+begin_src emacs-lisp
 (use-package exec-path-from-shell
   :ensure t
@@ -96,7 +96,8 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
           auto-save-file-name-transforms `((".*" ,(concat user-emacs-directory "auto-save/") t))
           create-lockfiles nil
           async-shell-command-buffer 'new-buffer
-          workspace-directory (expand-file-name "workspaces" "~"))
+          workspace-directory (expand-file-name "workspaces" "~")
+	  dired-listing-switches "-alL")
     
     (make-directory (concat user-emacs-directory "backups") t)
     (make-directory (concat user-emacs-directory "auto-save") t)
@@ -122,7 +123,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
     (("C-s-f" . toggle-frame-fullscreen)))
 #+end_src
 
-** package
+** packages
 #+begin_src emacs-lisp
 (use-package package
   :init
@@ -132,7 +133,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (package-initialize))
 #+end_src
 
-* mayphus
+* mayphus's custom
 #+begin_src emacs-lisp
 (use-package mayphus)
 #+end_src
@@ -204,7 +205,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (marginalia-mode))
 #+end_src
 
-* TODO Embark
+* Embark
 ** embark
 #+begin_src emacs-lisp
 (use-package embark
@@ -434,7 +435,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 #+end_src
 
 ** gptel
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package gptel
   :ensure t
   :config
@@ -463,7 +464,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 #+end_src
 
 ** elysium
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package elysium
   :ensure t
   :config
@@ -478,7 +479,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
 #+end_src
 
 *** smerge-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package smerge-mode
   :ensure nil
   :hook
@@ -580,7 +581,15 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
                      (let ((article-file (title-to-filename article-title)))
                        (expand-file-name (concat article-file ".org") 
                                          (expand-file-name "articles" org-directory))))))
-           "#+title: %?\n#+date: %U\n\n%i" :prepend t)))
+           "#+title: %?\n#+date: %U\n\n%i" :prepend t)
+	  ("p" "Project" plain
+           (file (lambda ()
+                   (let ((project-title (read-string "Project: ")))
+                     (let ((project-file (title-to-filename project-title)))
+                       (expand-file-name (concat article-file ".org") 
+                                         (expand-file-name "project" org-directory))))))
+           "#+title: %?\n#+date: %U\n\n%i" :prepend t)
+	  ))
   :bind (("C-c c" . org-capture)))
 #+end_src
 
@@ -606,7 +615,7 @@ run this script to make sure =org-babel-tangle= generate ~~init.el~ works.
   (setq denote-dired-directories
         (list org-directory))
 
-  (setq denote-directory (expand-file-name "notes" org-directory))
+  (setq denote-directory org-directory)
   (setq denote-directories
         (list (expand-file-name "notes" org-directory)
               (expand-file-name "articles" org-directory)))
