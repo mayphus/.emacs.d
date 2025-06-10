@@ -1,0 +1,32 @@
+# Backup and auto-save directories
+backups/
+
+# Auto-save list
+auto-save-list/
+
+# Emacs temp files
+*~
+\#*\#
+.\#*
+
+# Package archives and state
+elpa/
+transient/
+projects.eld
+places.eld
+history
+
+# Custom settings (may contain personal info)
+custom.el
+
+# Tree-sitter compiled grammars
+tree-sitter/
+
+# Eshell configuration
+eshell/
+
+# Projectile bookmarks
+projectile-bookmarks.eld
+
+# Auto-save list
+auto-save-list/
