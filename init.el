@@ -191,7 +191,7 @@
    ("C-c a m" . gptel-menu)))
 
 (use-package claude-code
-  :load-path "lisp/claude-code.el"
+  :ensure t
   :config
   (claude-code-mode)
 
@@ -207,8 +207,6 @@
   (advice-add 'claude-code :after 'claude-code-auto-switch-focus)
 
   :bind-keymap ("C-c c" . claude-code-command-map))
-
-
 
 ;; User Interface
 

@@ -37,6 +37,9 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 
 ### Key Bindings Structure
 - `C-c c` - Claude Code command map (primary interface for AI assistance)
+  - `C-c c p` - Switch between Claude project sessions
+  - `C-c c P` - List all active Claude project sessions
+  - `C-u C-c c k` - Kill specific project's Claude session
 - `C-c a` - GPTel AI commands (d=DeepSeek, g=Gemini, c=send, m=menu)
 - `C-c g` - GitHub Reports command map (d=daily, w=weekly, r=repo summary, i=insights)
 - `C-c n` - Denote note-taking commands
@@ -73,11 +76,18 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - Update all packages: `M-x package-upgrade-all`
 
 ### Claude Code Integration
-The configuration includes claude-code.el for AI assistance:
+The configuration includes claude-code.el for AI assistance with multi-project support:
 - Start Claude session: `C-c c c` (project root) or `C-c c d` (current directory)
+- Switch between projects: `C-c c p` (switch project) or `C-c c P` (list all projects)
 - Send commands: `C-c c s` (basic) or `C-c c x` (with context)
 - Access all features via transient menu: `C-c c m`
 - Execute Emacs Lisp: Use `emacsclient --eval '(expression)'` for external integration
+
+#### Multi-Project Features
+- Each project gets its own Claude session with buffer name `*claude-<project>*`
+- Automatic project detection based on current file's project root
+- Commands automatically route to the correct project's Claude session
+- Kill specific project sessions with `C-u C-c c k`
 
 ### Configuration Conventions
 - All settings use lexical binding

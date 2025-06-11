@@ -1,3 +1,0 @@
-[submodule "lisp/claude-code.el"]
-	path = lisp/claude-code.el
-	url = https://github.com/mayphus/claude-code.el.git
