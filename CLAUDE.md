@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Emacs configuration directory that provides a modern, minimalist setup focused on enhanced completion and integration with Claude Code.
+This is an Emacs configuration directory that provides a modern, minimalist setup focused on enhanced completion and integration with Claude Code. This configuration serves as a general-purpose development environment suitable for various programming tasks, web development, automation scripts, and AI/ML experiments.
 
 ## Key Configuration Architecture
 
 ### Core Components
 - `init.el` - Main configuration file with package setup and key bindings
 - `early-init.el` - Early initialization for UI elements and backup configuration
-- `custom.el` - Auto-generated customization file (if exists)
 - `lisp/` - Directory for custom Elisp packages (auto-created when needed)
+- `custom.el` - Auto-generated customization file (if exists)
 
 ### Package Management
 Uses built-in `use-package` with `:ensure t` for automatic package installation. Packages are installed to `elpa/` directory.
@@ -46,7 +46,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - `C-x C-r` - consult-recent-file
 - `M-g g` - consult-goto-line
 - `M-s d` - consult-find
-- `M-s g` - consult-grep  
+- `M-s g` - consult-grep
 - `M-s r` - consult-ripgrep
 - `C-.` - embark-act (context actions)
 - `C-;` - embark-dwim (smart context actions)
@@ -55,7 +55,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 
 ### Directory Structure
 - `backups/backups/` - Backup files (auto-created in early-init.el)
-- `backups/auto-saves/` - Auto-save files (auto-created in early-init.el)  
+- `backups/auto-saves/` - Auto-save files (auto-created in early-init.el)
 - `elpa/` - Package installation directory
 - `lisp/` - Custom Elisp packages (contains meow-config.el and claude-code.el/)
 - `eshell/` - Eshell configuration (auto-created)
@@ -77,6 +77,7 @@ The configuration includes claude-code.el for AI assistance:
 - Start Claude session: `C-c c c` (project root) or `C-c c d` (current directory)
 - Send commands: `C-c c s` (basic) or `C-c c x` (with context)
 - Access all features via transient menu: `C-c c m`
+- Execute Emacs Lisp: Use `emacsclient --eval '(expression)'` for external integration
 
 ### Configuration Conventions
 - All settings use lexical binding
@@ -139,12 +140,6 @@ The configuration provides comprehensive AI support:
 - Context-aware command sending
 - Transient menu interface for all features
 
-#### GitHub Reports
-- Custom package for GitHub workflow automation
-- Daily and weekly activity reports via Claude Code
-- Repository summary and contribution insights
-- Integration with gh CLI for data fetching
-
 ### Development Environment
 - **LSP Support**: Automatic language server activation for major languages
 - **Treesitter**: Advanced syntax highlighting and parsing
@@ -154,10 +149,17 @@ The configuration provides comprehensive AI support:
 
 ### Emacs Lisp Tasks
 - Use Emacs Lisp to accomplish Emacs-related tasks for better customization and integration
-- Execute Emacs Lisp code directly within the running Emacs instance via MCP tools
-
+- Execute Emacs Lisp code via `emacsclient --eval '(expression)'` for external integration
 
 ### Auto-start Behavior
 - Configuration automatically starts Claude Code on Emacs startup
 - Cleans up non-essential buffers and focuses on Claude interface
 - Provides seamless AI assistance integration from first launch
+
+### General Development Workflows
+This configuration supports diverse development tasks:
+- **Web Applications**: Full-stack development with LSP support
+- **Automation Scripts**: Python, shell scripting with enhanced completion
+- **AI/ML Projects**: Jupyter integration, data science workflows
+- **Hardware Projects**: Microcontroller programming, PCB design documentation
+- **Documentation**: Org-mode for technical writing, Denote for knowledge management

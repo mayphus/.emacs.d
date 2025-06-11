@@ -312,6 +312,4 @@ and standard-dark themes based on system appearance."
   ;; Journal template
   (setq denote-templates '((journal . "* Daily Notes\n\n** Tasks\n\n** Notes\n\n"))))
 
-;;; Custom Functions
-
 ;;; init.el ends here
