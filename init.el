@@ -54,6 +54,18 @@
 ;; Suppress startup buffer
 (setq inhibit-startup-message t)
 
+;; Smooth scrolling configuration
+(setq scroll-step 1
+      scroll-margin 3
+      scroll-conservatively 100000
+      auto-window-vscroll nil
+      fast-but-imprecise-scrolling t
+      scroll-preserve-screen-position t)
+
+;; Pixel-level smooth scrolling (Emacs 29+)
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+
 ;; Start Emacs server for external connections (emacsclient)
 (require 'server)
 (unless (server-running-p)
@@ -192,17 +204,24 @@
 
 (use-package claude-code
   :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :config
   (claude-code-mode)
 
   ;; Auto-switch to claude-code buffer when it starts
   (defun claude-code-auto-switch-focus (&optional arg)
     "Switch to claude-code buffer and focus on it."
-    (when-let* ((buffer (get-buffer "*claude*")))
-      (let ((window (get-buffer-window buffer)))
-        (if window
-            (select-window window)
-          (switch-to-buffer-other-window buffer)))))
+    (run-with-timer claude-code-startup-delay nil
+      (lambda ()
+        (when-let* ((claude-buffers (seq-filter 
+                                     (lambda (buf) 
+                                       (string-match-p "^\\*claude:" (buffer-name buf)))
+                                     (buffer-list)))
+                    (buffer (car claude-buffers)))
+          (let ((window (get-buffer-window buffer)))
+            (if window
+                (select-window window)
+              (switch-to-buffer-other-window buffer)))))))
 
   (advice-add 'claude-code :after 'claude-code-auto-switch-focus)
 
