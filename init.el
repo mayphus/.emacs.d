@@ -45,9 +45,6 @@
 ;; Remember cursor position in files
 (save-place-mode 1)
 
-;; Use y/n instead of yes/no for confirmations
-(fset 'yes-or-no-p 'y-or-n-p)
-
 ;; Automatic whitespace cleanup
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -186,7 +183,7 @@
           :stream t))
 
   ;; Set Gemini as default
-  (setq gptel-model 'gemini-2.0-flash
+  (setq gptel-model 'gemini-2.5-pro
         gptel-backend gptel-backend-gemini)
 
   ;; Key bindings for quick backend switching
@@ -202,30 +199,42 @@
    ("C-c a c" . gptel-send)
    ("C-c a m" . gptel-menu)))
 
-(use-package claude-code
-  :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+;; GitHub Copilot integration
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word))
+  :custom
+  (copilot-max-char -1)  ; No character limit
+  (copilot-indent-offset-warning-disable t)
   :config
-  (claude-code-mode)
+  ;; Enable copilot in various modes
+  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp"))
+  (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
+  (add-to-list 'copilot-major-mode-alist '("ts" . "typescript"))
 
-  ;; Auto-switch to claude-code buffer when it starts
-  (defun claude-code-auto-switch-focus (&optional arg)
-    "Switch to claude-code buffer and focus on it."
-    (run-with-timer claude-code-startup-delay nil
-      (lambda ()
-        (when-let* ((claude-buffers (seq-filter 
-                                     (lambda (buf) 
-                                       (string-match-p "^\\*claude:" (buffer-name buf)))
-                                     (buffer-list)))
-                    (buffer (car claude-buffers)))
-          (let ((window (get-buffer-window buffer)))
-            (if window
-                (select-window window)
-              (switch-to-buffer-other-window buffer)))))))
+  ;; Optional: Disable copilot in certain modes if needed
+  ;; (add-to-list 'copilot-disable-predicates
+  ;;              (lambda () (string-match-p "^magit" (buffer-name))))
 
-  (advice-add 'claude-code :after 'claude-code-auto-switch-focus)
+  ;; Auto-login reminder
+  (unless (file-exists-p (expand-file-name "copilot" user-emacs-directory))
+    (message "Copilot installed! Run M-x copilot-login to authenticate with GitHub"))
 
-  :bind-keymap ("C-c c" . claude-code-command-map))
+  ;; Bind global keys for copilot
+  :bind (("C-c M-c" . copilot-mode)
+         ("C-c M-n" . copilot-next-completion)
+         ("C-c M-p" . copilot-previous-completion)
+         ("C-c M-f" . copilot-accept-completion-by-line)))
+
+;; Claude Code Integration
+(use-package claude-code
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :bind ("C-c c" . claude-code))
 
 ;; User Interface
 
@@ -268,7 +277,7 @@ and standard-dark themes based on system appearance."
 
   ;; Apply system theme on startup and check periodically
   (auto-switch-theme)
-  (run-with-timer 0 60 'auto-switch-theme)
+  (run-with-timer 0 30 'auto-switch-theme)
 
   ;; Key binding for manual theme toggle
   (global-set-key (kbd "<f5>") 'toggle-theme))

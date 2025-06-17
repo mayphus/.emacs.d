@@ -30,3 +30,6 @@ projectile-bookmarks.eld
 
 # Auto-save list
 auto-save-list/
+
+# Claude
+.claude/
