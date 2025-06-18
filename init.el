@@ -7,15 +7,30 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-;; Add lisp directory and all subdirectories to load-path
+;; Add lisp directory and subdirectories to load-path with safety limits
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
     ;; Add the main lisp directory
     (add-to-list 'load-path lisp-dir)
-    ;; Add all subdirectories recursively
-    (dolist (subdir (directory-files lisp-dir t "^[^.]"))
-      (when (file-directory-p subdir)
-        (add-to-list 'load-path subdir)))))
+    ;; Add subdirectories with depth limit and symlink protection
+    (condition-case err
+        (let ((max-depth 3)
+              (visited-dirs (make-hash-table :test 'equal)))
+          (defun add-lisp-subdirs (dir depth)
+            "Add subdirectories to load-path with depth limit and symlink protection."
+            (when (and (< depth max-depth)
+                       (not (gethash (file-truename dir) visited-dirs)))
+              (puthash (file-truename dir) t visited-dirs)
+              (dolist (subdir (ignore-errors (directory-files dir t "^[^.]")))
+                (when (and subdir
+                           (file-directory-p subdir)
+                           (not (file-symlink-p subdir)))
+                  (add-to-list 'load-path subdir)
+                  (add-lisp-subdirs subdir (1+ depth))))))
+          (add-lisp-subdirs lisp-dir 0))
+      (error
+       (message "Warning: Failed to load some lisp subdirectories: %s"
+                (error-message-string err))))))
 
 ;; Core Settings
 
@@ -134,10 +149,6 @@
   :ensure t
   :hook ((python-mode js-mode typescript-mode go-mode rust-mode) . eglot-ensure))
 
-;; Syntax checking
-;; (use-package flymake
-;;   :hook (prog-mode . flymake-mode))
-
 
 ;; Markdown mode for better markdown display
 (use-package markdown-mode
@@ -159,7 +170,8 @@
     (exec-path-from-shell-copy-envs
      '("OPENAI_API_KEY"
        "GEMINI_API_KEY"
-       "DEEPSEEK_API_KEY"))
+       "DEEPSEEK_API_KEY"
+       "CLOUDFLARE_API_TOKEN"))
     (exec-path-from-shell-initialize)))
 
 ;; AI Assistance
@@ -217,10 +229,6 @@
   (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
   (add-to-list 'copilot-major-mode-alist '("ts" . "typescript"))
 
-  ;; Optional: Disable copilot in certain modes if needed
-  ;; (add-to-list 'copilot-disable-predicates
-  ;;              (lambda () (string-match-p "^magit" (buffer-name))))
-
   ;; Auto-login reminder
   (unless (file-exists-p (expand-file-name "copilot" user-emacs-directory))
     (message "Copilot installed! Run M-x copilot-login to authenticate with GitHub"))
@@ -246,21 +254,48 @@
   (defvar current-theme-dark nil
     "Track whether the current theme is dark.")
 
+  (defun get-system-appearance ()
+    "Get system appearance (dark/light) cross-platform."
+    (condition-case nil
+      (cond
+       ;; macOS
+       ((eq system-type 'darwin)
+        (string-match-p "Dark"
+                       (shell-command-to-string
+                        "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light")))
+       ;; Linux with GNOME
+       ((and (eq system-type 'gnu/linux)
+             (executable-find "gsettings"))
+        (string-match-p "dark"
+                       (shell-command-to-string
+                        "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light")))
+       ;; Linux with KDE
+       ((and (eq system-type 'gnu/linux)
+             (getenv "KDE_SESSION_VERSION"))
+        (string-match-p "dark"
+                       (shell-command-to-string
+                        "kreadconfig5 --group General --key ColorScheme 2>/dev/null || echo light")))
+       ;; Windows (basic time-based fallback)
+       ((eq system-type 'windows-nt)
+        (let ((hour (string-to-number (format-time-string "%H"))))
+          (or (< hour 7) (> hour 19))))
+       ;; Default fallback
+       (t nil))
+      (error nil)))
+
   (defun auto-switch-theme ()
-    "Switch between standard-light
-and standard-dark themes based on system appearance."
-    (let ((dark-mode-p
-           (string-match-p
-            "Dark"
-            (shell-command-to-string
-             "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light"))))
-      (if dark-mode-p
-          (progn
-            (load-theme 'standard-dark t)
-            (setq current-theme-dark t))
-        (progn
-          (load-theme 'standard-light t)
-          (setq current-theme-dark nil)))))
+    "Switch between standard-light and standard-dark themes based on system appearance."
+    (condition-case err
+        (let ((dark-mode-p (get-system-appearance)))
+          (if dark-mode-p
+              (unless current-theme-dark
+                (load-theme 'standard-dark t)
+                (setq current-theme-dark t))
+            (when current-theme-dark
+              (load-theme 'standard-light t)
+              (setq current-theme-dark nil))))
+      (error
+       (message "Theme switching failed: %s" (error-message-string err)))))
 
   (defun toggle-theme ()
     "Toggle between standard-light and standard-dark themes."
@@ -275,9 +310,11 @@ and standard-dark themes based on system appearance."
         (setq current-theme-dark t)
         (message "Switched to standard-dark theme"))))
 
-  ;; Apply system theme on startup and check periodically
-  (auto-switch-theme)
-  (run-with-timer 0 30 'auto-switch-theme)
+  ;; Apply system theme on startup and check periodically (every 5 minutes)
+  (condition-case nil
+      (auto-switch-theme)
+    (error (message "Initial theme setup failed, using default")))
+  (run-with-timer 0 300 'auto-switch-theme)  ; 300 seconds = 5 minutes
 
   ;; Key binding for manual theme toggle
   (global-set-key (kbd "<f5>") 'toggle-theme))
