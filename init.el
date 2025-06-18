@@ -240,9 +240,10 @@
          ("C-c M-f" . copilot-accept-completion-by-line)))
 
 ;; Claude Code Integration
-(use-package claude-code
+(use-package claude-code :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :bind ("C-c c" . claude-code))
+  :config (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map))
 
 ;; User Interface
 
