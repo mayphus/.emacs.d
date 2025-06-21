@@ -178,6 +178,7 @@
 
 (use-package gptel
   :ensure t
+  :defer t
   :config
   ;; Configure DeepSeek backend (default)
   (setq gptel-backend-deepseek
@@ -214,6 +215,7 @@
 ;; GitHub Copilot integration
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
+  :defer t
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("<tab>" . 'copilot-accept-completion)
@@ -311,11 +313,11 @@
         (setq current-theme-dark t)
         (message "Switched to standard-dark theme"))))
 
-  ;; Apply system theme on startup and check periodically (every 5 minutes)
+  ;; Apply system theme on startup and check periodically (every 60 seconds)
   (condition-case nil
       (auto-switch-theme)
     (error (message "Initial theme setup failed, using default")))
-  (run-with-timer 0 10 'auto-switch-theme)  ; 3600 seconds = 1 hour
+  (run-with-timer 0 60 'auto-switch-theme)  ; Check every 60 seconds
 
   ;; Key binding for manual theme toggle
   (global-set-key (kbd "<f5>") 'toggle-theme))
