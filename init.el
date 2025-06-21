@@ -147,7 +147,7 @@
 ;; LSP support
 (use-package eglot
   :ensure t
-  :hook ((python-mode js-mode typescript-mode go-mode rust-mode) . eglot-ensure))
+  :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
 
 
 ;; Markdown mode for better markdown display
@@ -195,7 +195,7 @@
           :stream t))
 
   ;; Set Gemini as default
-  (setq gptel-model 'gemini-2.5-pro
+  (setq gptel-model 'gemini-2.0-flash-exp
         gptel-backend gptel-backend-gemini)
 
   ;; Key bindings for quick backend switching
@@ -206,7 +206,7 @@
                   (message "Switched to DeepSeek backend")))
    ("C-c a g" . (lambda () (interactive)
                   (setq gptel-backend gptel-backend-gemini
-                        gptel-model 'gemini-2.0-flash)
+                        gptel-model 'gemini-2.0-flash-exp)
                   (message "Switched to Gemini backend")))
    ("C-c a c" . gptel-send)
    ("C-c a m" . gptel-menu)))
@@ -315,13 +315,13 @@
   (condition-case nil
       (auto-switch-theme)
     (error (message "Initial theme setup failed, using default")))
-  (run-with-timer 0 300 'auto-switch-theme)  ; 300 seconds = 5 minutes
+  (run-with-timer 0 10 'auto-switch-theme)  ; 3600 seconds = 1 hour
 
   ;; Key binding for manual theme toggle
   (global-set-key (kbd "<f5>") 'toggle-theme))
 
 ;; Additional key bindings
-(global-set-key (kbd "M-/") 'comment-region)
+(global-set-key (kbd "C-c /") 'comment-region)
 
 ;; Key binding discovery
 (use-package which-key
@@ -373,6 +373,7 @@
   (denote-fontify-links-mode-maybe)
   ;; Configure silo directories
   (setq denote-dired-directories (list denote-directory))
+  (add-hook 'dired-mode-hook #'denote-dired-mode)
   ;; Journal template
   (setq denote-templates '((journal . "* Daily Notes\n\n** Tasks\n\n** Notes\n\n"))))
 
