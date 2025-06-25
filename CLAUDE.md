@@ -27,7 +27,8 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **eglot** - LSP support for Python, JS, TS, Go, Rust
 - **which-key** - Key binding discovery (0.3s delay)
 - **claude-code** - Integration with Claude Code CLI (bound to `C-c c`)
-- **gptel** - Multi-backend AI support (Gemini default, DeepSeek available) (bound to `C-c a`)
+- **ai-cli** - Multi-AI CLI interface with transient menu (bound to `C-c a`)
+- **gptel** - Multi-backend AI support (Gemini default, DeepSeek available)
 - **github-reports** - GitHub integration tools (bound to `C-c g`)
 - **denote** - Note-taking system for org files (bound to `C-c n`)
 - **org** - Enhanced org-mode with pretty entities and inline images
@@ -40,7 +41,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
   - `C-c c p` - Switch between Claude project sessions
   - `C-c c P` - List all active Claude project sessions
   - `C-u C-c c k` - Kill specific project's Claude session
-- `C-c a` - GPTel AI commands (d=DeepSeek, g=Gemini, c=send, m=menu)
+- `C-c '` - AI CLI Interface (transient menu for Claude, Gemini, Codex with session management)
 - `C-c g` - GitHub Reports command map (d=daily, w=weekly, r=repo summary, i=insights)
 - `C-c n` - Denote note-taking commands
 - `C-x g` - magit-status (git interface)
@@ -137,6 +138,25 @@ The configuration includes Denote for structured note-taking:
 
 ### AI Integration Features
 The configuration provides comprehensive AI support:
+
+#### AI CLI Interface (`C-c '`)
+Modern transient menu interface for multiple AI models:
+- **Start Sessions**: Claude, Gemini, Codex (project or directory-based)
+- **Send Text**: Send buffer/region to any AI model
+- **Session Management**: List, switch, and kill active sessions
+- **Status Tracking**: View session status (active/idle/dead) and directories
+- **Smart Defaults**: Auto-detect project context and recent sessions
+
+Key Commands:
+- `c/C` - Start Claude (project/directory)
+- `g/G` - Start Gemini (project/directory)  
+- `x/X` - Start Codex (project/directory)
+- `s/r/t` - Send text to Claude/Gemini/Codex
+- `R` - Send region to most recent session
+- `l` - List active sessions with status
+- `w` - Switch between sessions
+- `k/K` - Kill session/all sessions
+- `?` - Help, `q` - Quit menu
 
 #### GPTel Integration
 - Multiple backend support: Gemini (default) and DeepSeek

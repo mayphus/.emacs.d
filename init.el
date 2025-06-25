@@ -135,6 +135,12 @@
   (corfu-auto t)
   (corfu-auto-delay 0.2))
 
+;; Visual feedback for edits
+(use-package volatile-highlights
+  :ensure t
+  :config
+  (volatile-highlights-mode t))
+
 ;; Development Tools
 
 (use-package vterm
@@ -178,55 +184,15 @@
 
 ;; AI Assistance
 
-(use-package gptel
-  :ensure t
-  :defer t
-  :config
-  ;; Configure DeepSeek backend (default)
-  (setq gptel-backend-deepseek
-        (gptel-make-openai "DeepSeek"
-          :host "api.deepseek.com"
-          :endpoint "/chat/completions"
-          :stream t
-          :key (lambda () (getenv "DEEPSEEK_API_KEY"))
-          :models '("deepseek-chat")))
-
-  ;; Configure Gemini backend
-  (setq gptel-backend-gemini
-        (gptel-make-gemini "Gemini"
-          :key (lambda () (getenv "GEMINI_API_KEY"))
-          :stream t))
-
-  ;; Set Gemini as default
-  (setq gptel-model 'gemini-2.0-flash-exp
-        gptel-backend gptel-backend-gemini)
-
-  ;; Key bindings for quick backend switching
-  :bind
-  (("C-c a d" . (lambda () (interactive)
-                  (setq gptel-backend gptel-backend-deepseek
-                        gptel-model 'deepseek-chat)
-                  (message "Switched to DeepSeek backend")))
-   ("C-c a g" . (lambda () (interactive)
-                  (setq gptel-backend gptel-backend-gemini
-                        gptel-model 'gemini-2.0-flash-exp)
-                  (message "Switched to Gemini backend")))
-   ("C-c a c" . gptel-send)
-   ("C-c a m" . gptel-menu)))
+;; Transient menus for UI
+(use-package transient
+  :ensure t)
 
 ;; AI CLI wrappers
 (use-package ai-cli
-  :after vterm
+  :after (vterm transient)
   :defer t
-  :bind (("C-c ' g" . gemini)
-         ("C-c ' c" . claude)
-         ("C-c ' x" . codex)
-         ("C-c ' G" . gemini-send)
-         ("C-c ' C" . claude-send)
-         ("C-c ' X" . codex-send)
-         ("C-c ' M-g" . gemini-in-directory)
-         ("C-c ' M-c" . claude-in-directory)
-         ("C-c ' M-x" . codex-in-directory)))
+  :bind (("C-c '" . ai-cli-menu)))
 
 ;; GitHub Copilot integration
 (use-package copilot
