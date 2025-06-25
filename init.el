@@ -137,6 +137,9 @@
 
 ;; Development Tools
 
+(use-package vterm
+  :ensure t)
+
 ;; Treesitter for better syntax highlighting
 (use-package treesit-auto
   :ensure t
@@ -170,8 +173,7 @@
     (exec-path-from-shell-copy-envs
      '("OPENAI_API_KEY"
        "GEMINI_API_KEY"
-       "DEEPSEEK_API_KEY"
-       "CLOUDFLARE_API_TOKEN"))
+       "DEEPSEEK_API_KEY"))
     (exec-path-from-shell-initialize)))
 
 ;; AI Assistance
@@ -212,6 +214,20 @@
    ("C-c a c" . gptel-send)
    ("C-c a m" . gptel-menu)))
 
+;; AI CLI wrappers
+(use-package ai-cli
+  :after vterm
+  :defer t
+  :bind (("C-c ' g" . gemini)
+         ("C-c ' c" . claude)
+         ("C-c ' x" . codex)
+         ("C-c ' G" . gemini-send)
+         ("C-c ' C" . claude-send)
+         ("C-c ' X" . codex-send)
+         ("C-c ' M-g" . gemini-in-directory)
+         ("C-c ' M-c" . claude-in-directory)
+         ("C-c ' M-x" . codex-in-directory)))
+
 ;; GitHub Copilot integration
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
@@ -240,12 +256,6 @@
          ("C-c M-n" . copilot-next-completion)
          ("C-c M-p" . copilot-previous-completion)
          ("C-c M-f" . copilot-accept-completion-by-line)))
-
-;; Claude Code Integration
-(use-package claude-code :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map))
 
 ;; User Interface
 
