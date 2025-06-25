@@ -1,0 +1,3 @@
+[submodule "lisp/ai-cli.el"]
+	path = lisp/ai-cli.el
+	url = ./lisp/ai-cli.el
