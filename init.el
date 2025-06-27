@@ -135,11 +135,6 @@
   (corfu-auto t)
   (corfu-auto-delay 0.2))
 
-;; Visual feedback for edits
-(use-package volatile-highlights
-  :ensure t
-  :config
-  (volatile-highlights-mode t))
 
 ;; Development Tools
 
@@ -186,7 +181,6 @@
 
 ;; AI CLI wrappers
 (use-package ai-cli
-  :after (vterm transient)
   :defer t
   :bind (("C-c '" . ai-cli-menu)))
 
@@ -217,109 +211,46 @@
 
 ;; User Interface
 
-;; Standard themes - elegant light/dark theme pair
+;; Standard themes with auto-switching
 (use-package standard-themes
   :ensure t
   :config
-  ;; Track current theme state
-  (defvar current-theme-dark nil
-    "Track whether the current theme is dark.")
-
-  (defun get-macos-appearance ()
-    "Get macOS system appearance."
-    (condition-case nil
-        (string-match-p "Dark"
-                       (shell-command-to-string
-                        "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light"))
-      (error nil)))
-
-  (defun get-gnome-appearance ()
-    "Get GNOME system appearance."
-    (condition-case nil
-        (string-match-p "dark"
-                       (shell-command-to-string
-                        "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light"))
-      (error nil)))
-
-  (defun get-kde-appearance ()
-    "Get KDE system appearance."
-    (condition-case nil
-        (string-match-p "dark"
-                       (shell-command-to-string
-                        "kreadconfig5 --group General --key ColorScheme 2>/dev/null || echo light"))
-      (error nil)))
-
-  (defun get-windows-appearance ()
-    "Get Windows system appearance (time-based fallback)."
-    (let ((hour (string-to-number (format-time-string "%H"))))
-      (or (< hour 7) (> hour 19))))
+  (defvar current-theme-dark nil)
 
   (defun get-system-appearance ()
-    "Get system appearance (dark/light) cross-platform."
-    (cond
-     ;; macOS
-     ((eq system-type 'darwin)
-      (get-macos-appearance))
-     ;; Linux with GNOME
-     ((and (eq system-type 'gnu/linux)
-           (executable-find "gsettings"))
-      (get-gnome-appearance))
-     ;; Linux with KDE
-     ((and (eq system-type 'gnu/linux)
-           (getenv "KDE_SESSION_VERSION"))
-      (get-kde-appearance))
-     ;; Windows (basic time-based fallback)
-     ((eq system-type 'windows-nt)
-      (get-windows-appearance))
-     ;; Default fallback
-     (t nil)))
+    "Get system dark mode preference."
+    (condition-case nil
+        (cond
+         ((eq system-type 'darwin)
+          (string-match-p "Dark" (shell-command-to-string
+                                 "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light")))
+         ((and (eq system-type 'gnu/linux) (executable-find "gsettings"))
+          (string-match-p "dark" (shell-command-to-string
+                                 "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light")))
+         (t nil))
+      (error nil)))
 
   (defun auto-switch-theme ()
-    "Switch between standard-light and standard-dark themes based on system appearance."
-    (condition-case err
-        (let ((dark-mode-p (get-system-appearance)))
-          (if dark-mode-p
-              (unless current-theme-dark
-                (load-theme 'standard-dark t)
-                (setq current-theme-dark t))
-            (when current-theme-dark
-              (load-theme 'standard-light t)
-              (setq current-theme-dark nil))))
-      (error
-       (message "Theme switching failed: %s" (error-message-string err)))))
+    "Auto-switch theme based on system appearance."
+    (let ((dark-p (get-system-appearance)))
+      (when (not (eq dark-p current-theme-dark))
+        (load-theme (if dark-p 'standard-dark 'standard-light) t)
+        (setq current-theme-dark dark-p))))
 
   (defun toggle-theme ()
-    "Toggle between standard-light and standard-dark themes."
+    "Toggle between light and dark themes."
     (interactive)
-    (if current-theme-dark
-        (progn
-          (load-theme 'standard-light t)
-          (setq current-theme-dark nil)
-          (message "Switched to standard-light theme"))
-      (progn
-        (load-theme 'standard-dark t)
-        (setq current-theme-dark t)
-        (message "Switched to standard-dark theme"))))
+    (load-theme (if current-theme-dark 'standard-light 'standard-dark) t)
+    (setq current-theme-dark (not current-theme-dark)))
 
-  ;; Apply system theme on startup and check periodically (every 60 seconds)
-  (condition-case nil
-      (auto-switch-theme)
-    (error (message "Initial theme setup failed, using default")))
-  (run-with-timer 0 60 'auto-switch-theme)  ; Check every 60 seconds
-
-  ;; Key binding for manual theme toggle
+  ;; Initialize and auto-check every 60 seconds
+  (auto-switch-theme)
+  (run-with-timer 0 60 'auto-switch-theme)
   (global-set-key (kbd "<f5>") 'toggle-theme))
 
 ;; Additional key bindings
 (global-set-key (kbd "C-c /") 'comment-region)
 
-;; Key binding discovery
-(use-package which-key
-  :ensure t
-  :defer 1
-  :init (which-key-mode)
-  :custom
-  (which-key-idle-delay 0.3))
 
 ;; Org Mode
 
