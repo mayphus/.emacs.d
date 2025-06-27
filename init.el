@@ -184,10 +184,6 @@
 
 ;; AI Assistance
 
-;; Transient menus for UI
-(use-package transient
-  :ensure t)
-
 ;; AI CLI wrappers
 (use-package ai-cli
   :after (vterm transient)
@@ -213,10 +209,6 @@
   (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
   (add-to-list 'copilot-major-mode-alist '("ts" . "typescript"))
 
-  ;; Auto-login reminder
-  (unless (file-exists-p (expand-file-name "copilot" user-emacs-directory))
-    (message "Copilot installed! Run M-x copilot-login to authenticate with GitHub"))
-
   ;; Bind global keys for copilot
   :bind (("C-c M-c" . copilot-mode)
          ("C-c M-n" . copilot-next-completion)
@@ -233,34 +225,54 @@
   (defvar current-theme-dark nil
     "Track whether the current theme is dark.")
 
-  (defun get-system-appearance ()
-    "Get system appearance (dark/light) cross-platform."
+  (defun get-macos-appearance ()
+    "Get macOS system appearance."
     (condition-case nil
-      (cond
-       ;; macOS
-       ((eq system-type 'darwin)
         (string-match-p "Dark"
                        (shell-command-to-string
-                        "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light")))
-       ;; Linux with GNOME
-       ((and (eq system-type 'gnu/linux)
-             (executable-find "gsettings"))
-        (string-match-p "dark"
-                       (shell-command-to-string
-                        "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light")))
-       ;; Linux with KDE
-       ((and (eq system-type 'gnu/linux)
-             (getenv "KDE_SESSION_VERSION"))
-        (string-match-p "dark"
-                       (shell-command-to-string
-                        "kreadconfig5 --group General --key ColorScheme 2>/dev/null || echo light")))
-       ;; Windows (basic time-based fallback)
-       ((eq system-type 'windows-nt)
-        (let ((hour (string-to-number (format-time-string "%H"))))
-          (or (< hour 7) (> hour 19))))
-       ;; Default fallback
-       (t nil))
+                        "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light"))
       (error nil)))
+
+  (defun get-gnome-appearance ()
+    "Get GNOME system appearance."
+    (condition-case nil
+        (string-match-p "dark"
+                       (shell-command-to-string
+                        "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light"))
+      (error nil)))
+
+  (defun get-kde-appearance ()
+    "Get KDE system appearance."
+    (condition-case nil
+        (string-match-p "dark"
+                       (shell-command-to-string
+                        "kreadconfig5 --group General --key ColorScheme 2>/dev/null || echo light"))
+      (error nil)))
+
+  (defun get-windows-appearance ()
+    "Get Windows system appearance (time-based fallback)."
+    (let ((hour (string-to-number (format-time-string "%H"))))
+      (or (< hour 7) (> hour 19))))
+
+  (defun get-system-appearance ()
+    "Get system appearance (dark/light) cross-platform."
+    (cond
+     ;; macOS
+     ((eq system-type 'darwin)
+      (get-macos-appearance))
+     ;; Linux with GNOME
+     ((and (eq system-type 'gnu/linux)
+           (executable-find "gsettings"))
+      (get-gnome-appearance))
+     ;; Linux with KDE
+     ((and (eq system-type 'gnu/linux)
+           (getenv "KDE_SESSION_VERSION"))
+      (get-kde-appearance))
+     ;; Windows (basic time-based fallback)
+     ((eq system-type 'windows-nt)
+      (get-windows-appearance))
+     ;; Default fallback
+     (t nil)))
 
   (defun auto-switch-theme ()
     "Switch between standard-light and standard-dark themes based on system appearance."
