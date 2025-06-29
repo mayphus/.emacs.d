@@ -9,6 +9,7 @@
 ;; Hide UI elements before frame creation
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+(menu-bar-mode -1)
 
 ;; Toggle fullscreen with C-s-f
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
