@@ -192,8 +192,11 @@
   "Sync Emacs theme with macOS appearance."
   (let ((appearance (shell-command-to-string "defaults read -g AppleInterfaceStyle 2>/dev/null")))
     (if (string-match "Dark" appearance)
-        (load-theme 'modus-vivendi t)
-      (load-theme 'modus-operandi t))))
+        (progn
+          (load-theme 'modus-vivendi t)
+          (set-frame-parameter nil 'ns-appearance 'dark))
+      (load-theme 'modus-operandi t)
+      (set-frame-parameter nil 'ns-appearance 'light))))
 
 (sync-theme-with-macos)
 (run-with-timer 0 60 'sync-theme-with-macos)

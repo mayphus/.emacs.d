@@ -11,7 +11,6 @@
 (menu-bar-mode -1)
 
 (when (eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (setq ns-use-native-fullscreen t
         ns-use-thin-smoothing t))
