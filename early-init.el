@@ -14,7 +14,9 @@
 ;; Configure macOS frame appearance
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (setq ns-use-native-fullscreen t
+        ns-use-thin-smoothing t))
 
 ;; Toggle fullscreen with C-s-f
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
