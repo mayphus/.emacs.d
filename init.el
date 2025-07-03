@@ -2,17 +2,13 @@
 ;;; Commentary: Clean, minimal config with completion, git, and AI assistance
 ;;; Code:
 
-;; Package repositories
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-;; Add lisp directory and subdirectories to load-path with safety limits
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
-    ;; Add the main lisp directory
     (add-to-list 'load-path lisp-dir)
-    ;; Add subdirectories with depth limit and symlink protection
     (condition-case err
         (let ((max-depth 3)
               (visited-dirs (make-hash-table :test 'equal)))
@@ -34,39 +30,30 @@
 
 ;; Core Settings
 
-;; Custom file configuration
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-;; Save command history
 (savehist-mode 1)
 
-;; Tab and indentation settings
 (setq-default tab-width 2
-              indent-tabs-mode nil)  ; Use spaces instead of tabs
+              indent-tabs-mode nil)
 
-;; JSON indentation and auto-formatting
 (setq js-indent-level 2)
 (add-hook 'json-mode-hook
   (lambda ()
-    (when (< (buffer-size) 50000) ; Only format files < 50KB
+    (when (< (buffer-size) 50000)
       (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))
 
-;; Auto-revert files when changed externally
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
 
-;; Remember cursor position in files
 (save-place-mode 1)
 
-;; Automatic whitespace cleanup
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; Suppress startup buffer
 (setq inhibit-startup-message t)
 
-;; Smooth scrolling configuration
 (setq scroll-step 1
       scroll-margin 3
       scroll-conservatively 100000
@@ -74,11 +61,9 @@
       fast-but-imprecise-scrolling t
       scroll-preserve-screen-position t)
 
-;; Pixel-level smooth scrolling (Emacs 29+)
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode 1))
 
-;; Start Emacs server for external connections (emacsclient)
 (require 'server)
 (unless (server-running-p)
   (server-start))
@@ -91,7 +76,6 @@
 
 ;; Completion System
 
-;; Modern minibuffer completion
 (use-package vertico
   :ensure t
   :init (vertico-mode))
@@ -106,7 +90,6 @@
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-;; Enhanced commands with live preview
 (use-package consult
   :ensure t
   :bind (("C-s" . consult-line)
@@ -117,7 +100,6 @@
          ("M-s g" . consult-grep)
          ("M-s r" . consult-ripgrep)))
 
-;; Context actions on completion candidates
 (use-package embark
   :ensure t
   :bind (("C-." . embark-act)
@@ -127,7 +109,6 @@
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
-;; In-buffer completion UI
 (use-package corfu
   :ensure t
   :init (global-corfu-mode)
@@ -141,20 +122,17 @@
 (use-package vterm
   :ensure t)
 
-;; Treesitter for better syntax highlighting
 (use-package treesit-auto
   :ensure t
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
-;; LSP support
 (use-package eglot
   :ensure t
   :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
 
 
-;; Markdown mode for better markdown display
 (use-package markdown-mode
   :ensure t
   :defer t
@@ -164,7 +142,6 @@
 
 ;; Environment
 
-;; Import environment variables from shell
 (use-package exec-path-from-shell
   :ensure t
   :custom
@@ -179,12 +156,26 @@
 
 ;; AI Assistance
 
-;; AI CLI wrappers
-(use-package ai-cli
-  :defer t
-  :bind (("C-c '" . ai-cli-menu)))
+(use-package gptel
+  :ensure t
+  :custom
+  (gptel-model "gemini-1.5-flash")
+  (gptel-backend
+   (gptel-make-gemini "Gemini"
+     :key 'gptel-api-key
+     :models '("gemini-1.5-flash" "gemini-1.5-pro")
+     :stream t))
+  :config
+  (when (getenv "GEMINI_API_KEY")
+    (setq gptel-api-key (getenv "GEMINI_API_KEY")))
+  (when (getenv "DEEPSEEK_API_KEY")
+    (setq gptel-deepseek
+          (gptel-make-openai "DeepSeek"
+            :host "api.deepseek.com"
+            :key (getenv "DEEPSEEK_API_KEY")
+            :models '("deepseek-chat" "deepseek-coder")
+            :stream t))))
 
-;; GitHub Copilot integration
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
   :defer t
@@ -198,12 +189,10 @@
   (copilot-max-char -1)  ; No character limit
   (copilot-indent-offset-warning-disable t)
   :config
-  ;; Enable copilot in various modes
   (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp"))
   (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
   (add-to-list 'copilot-major-mode-alist '("ts" . "typescript"))
 
-  ;; Bind global keys for copilot
   :bind (("C-c M-c" . copilot-mode)
          ("C-c M-n" . copilot-next-completion)
          ("C-c M-p" . copilot-previous-completion)
@@ -211,7 +200,6 @@
 
 ;; User Interface
 
-;; Standard themes with auto-switching
 (use-package standard-themes
   :ensure t
   :config
@@ -243,27 +231,23 @@
     (load-theme (if current-theme-dark 'standard-light 'standard-dark) t)
     (setq current-theme-dark (not current-theme-dark)))
 
-  ;; Initialize and auto-check every 60 seconds
   (auto-switch-theme)
   (run-with-timer 0 60 'auto-switch-theme)
   (global-set-key (kbd "<f5>") 'toggle-theme))
 
-;; Additional key bindings
 (global-set-key (kbd "C-c /") 'comment-region)
 
 
 ;; Org Mode
 
-;; Enhanced org-mode appearance
 (use-package org
   :defer t
   :custom
-  (org-startup-indented t)              ; Indent text according to outline structure
-  (org-pretty-entities t)               ; Show UTF8 characters for entities
-  (org-hide-emphasis-markers t)         ; Hide markup characters
-  (org-startup-with-inline-images t))   ; Show images by default
+  (org-startup-indented t)
+  (org-pretty-entities t)
+  (org-hide-emphasis-markers t)
+  (org-startup-with-inline-images t))
 
-;; Denote - Note-taking system
 (use-package denote
   :ensure t
   :custom
@@ -271,17 +255,17 @@
   (denote-known-keywords '("emacs" "programming" "electronics" "article" "project" "journal"))
   (denote-infer-keywords t)
   (denote-sort-keywords t)
-  (denote-file-type nil)                ; Use default .org extension
-  (denote-prompts '(title keywords))    ; Prompt for title and keywords
+  (denote-file-type nil)
+  (denote-prompts '(title keywords))
   :bind
   (("C-c n n" . denote)
-   ("C-c n c" . denote-region)          ; Create note from region
+   ("C-c n c" . denote-region)
    ("C-c n N" . denote-type)
    ("C-c n d" . denote-date)
-   ("C-c n z" . denote-signature)       ; Add signature to file name
+   ("C-c n z" . denote-signature)
    ("C-c n s" . denote-subdirectory)
    ("C-c n t" . denote-template)
-   ("C-c n i" . denote-link)            ; Insert link to other note
+   ("C-c n i" . denote-link)
    ("C-c n I" . denote-add-links)
    ("C-c n b" . denote-backlinks)
    ("C-c n f f" . denote-find-link)
@@ -290,12 +274,9 @@
    ("C-c n R" . denote-rename-file-using-front-matter)
    ("C-c n o" . denote-org-capture))
   :config
-  ;; Enable fontification for denote links
   (denote-fontify-links-mode-maybe)
-  ;; Configure silo directories
   (setq denote-dired-directories (list denote-directory))
   (add-hook 'dired-mode-hook #'denote-dired-mode)
-  ;; Journal template
   (setq denote-templates '((journal . "* Daily Notes\n\n** Tasks\n\n** Notes\n\n"))))
 
 ;;; init.el ends here
