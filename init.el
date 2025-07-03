@@ -80,7 +80,10 @@
 
 (use-package vertico
   :ensure t
-  :init (vertico-mode))
+  :init (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico-resize t))
 
 (use-package marginalia
   :ensure t
@@ -90,13 +93,17 @@
   :ensure t
   :custom
   (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles basic partial-completion)))))
+  (completion-category-overrides '((file (styles basic partial-completion))))
+  (orderless-matching-styles '(orderless-literal orderless-regexp))
+  (orderless-component-separator "[ &]"))
 
 (use-package consult
   :ensure t
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
+         ("C-x C-b" . consult-buffer)
          ("C-x C-r" . consult-recent-file)
+         ("M-y" . consult-yank-pop)
          ("M-g g" . consult-goto-line)
          ("M-s d" . consult-find)
          ("M-s g" . consult-grep)
@@ -116,7 +123,14 @@
   :init (global-corfu-mode)
   :custom
   (corfu-auto t)
-  (corfu-auto-delay 0.2))
+  (corfu-auto-delay 0.2)
+  (corfu-cycle t)
+  (corfu-preview-current 'insert)
+  (corfu-quit-no-match 'separator)
+  (corfu-popupinfo-delay '(0.25 . 0.1))
+  (corfu-popupinfo-hide nil)
+  :config
+  (corfu-popupinfo-mode))
 
 (use-package which-key
   :ensure t
@@ -124,6 +138,12 @@
   :custom
   (which-key-idle-delay 0.3))
 
+(use-package cape
+  :ensure t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 ;; Development Tools
 
@@ -230,37 +250,7 @@
 (use-package standard-themes
   :ensure t
   :config
-  (defvar current-theme-dark nil)
-
-  (defun get-system-appearance ()
-    "Get system dark mode preference."
-    (condition-case nil
-        (cond
-         ((eq system-type 'darwin)
-          (string-match-p "Dark" (shell-command-to-string
-                                 "defaults read -g AppleInterfaceStyle 2>/dev/null || echo Light")))
-         ((and (eq system-type 'gnu/linux) (executable-find "gsettings"))
-          (string-match-p "dark" (shell-command-to-string
-                                 "gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || echo light")))
-         (t nil))
-      (error nil)))
-
-  (defun auto-switch-theme ()
-    "Auto-switch theme based on system appearance."
-    (let ((dark-p (get-system-appearance)))
-      (when (not (eq dark-p current-theme-dark))
-        (load-theme (if dark-p 'standard-dark 'standard-light) t)
-        (setq current-theme-dark dark-p))))
-
-  (defun toggle-theme ()
-    "Toggle between light and dark themes."
-    (interactive)
-    (load-theme (if current-theme-dark 'standard-light 'standard-dark) t)
-    (setq current-theme-dark (not current-theme-dark)))
-
-  (auto-switch-theme)
-  (run-with-timer 0 60 'auto-switch-theme)
-  (global-set-key (kbd "<f5>") 'toggle-theme))
+  (load-theme 'standard-light t))
 
 (global-set-key (kbd "C-c /") 'comment-region)
 

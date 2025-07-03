@@ -33,7 +33,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **denote** - Note-taking system for org files (bound to `C-c n`)
 - **org** - Enhanced org-mode with pretty entities and inline images
 - **markdown-mode** - Enhanced markdown editing
-- **standard-themes** - Light/dark theme pair with auto-switching
+- **standard-themes** - Light theme (standard-light)
 - **exec-path-from-shell** - Environment variable importing
 
 ### Key Bindings Structure
@@ -54,7 +54,6 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - `M-s r` - consult-ripgrep
 - `C-.` - embark-act (context actions)
 - `C-;` - embark-dwim (smart context actions)
-- `F5` - toggle-theme (light/dark theme switching)
 - `C-s-f` - toggle fullscreen
 
 ### Directory Structure
@@ -103,7 +102,7 @@ The configuration includes claude-code.el for AI assistance with multi-project s
 - Save-place mode for cursor position memory
 - Treesitter auto-mode for enhanced syntax highlighting
 - LSP support via Eglot for Python, JS, TS, Go, Rust
-- Auto theme switching based on system appearance (checks every 60 seconds)
+- Fixed light theme (standard-light)
 - Environment variable importing for API keys (OPENAI_API_KEY, GEMINI_API_KEY, DEEPSEEK_API_KEY)
 - Multiple AI backend support through GPTel (Gemini default, DeepSeek available)
 - Emacs server auto-start for external connections

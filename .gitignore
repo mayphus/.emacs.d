@@ -33,3 +33,6 @@ auto-save-list/
 
 # Claude
 .claude/
+
+# Tramp
+tramp
