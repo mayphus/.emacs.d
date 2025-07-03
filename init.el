@@ -194,7 +194,13 @@
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config (claude-code-mode)
+  :config 
+  (claude-code-mode)
+  
+  ;; Font configuration for claude-code using custom face
+  (custom-set-faces
+   '(claude-code-repl-face ((t (:family "JuliaMono")))))
+  
   :bind-keymap ("C-c c" . claude-code-command-map))
 
 (use-package copilot
