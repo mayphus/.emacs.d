@@ -47,6 +47,7 @@
 
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
+(setq dired-auto-revert-buffer t)
 
 (save-place-mode 1)
 
@@ -75,6 +76,13 @@
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
+
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  (diff-hl-flydiff-mode)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
 ;; Completion System
 
@@ -214,13 +222,13 @@
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config 
+  :config
   (claude-code-mode)
-  
+
   ;; Font configuration for claude-code using custom face
   (custom-set-faces
    '(claude-code-repl-face ((t (:family "JuliaMono")))))
-  
+
   :bind-keymap ("C-c c" . claude-code-command-map))
 
 (use-package copilot
@@ -244,16 +252,6 @@
          ("C-c M-n" . copilot-next-completion)
          ("C-c M-p" . copilot-previous-completion)
          ("C-c M-f" . copilot-accept-completion-by-line)))
-
-;; User Interface
-
-(use-package standard-themes
-  :ensure t
-  :config
-  (load-theme 'standard-light t))
-
-(global-set-key (kbd "C-c /") 'comment-region)
-
 
 ;; Org Mode
 
