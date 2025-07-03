@@ -50,6 +50,8 @@
 
 (save-place-mode 1)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (setq inhibit-startup-message t)
@@ -116,11 +118,23 @@
   (corfu-auto t)
   (corfu-auto-delay 0.2))
 
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :custom
+  (which-key-idle-delay 0.3))
+
 
 ;; Development Tools
 
 (use-package vterm
   :ensure t)
+
+(use-package eat
+  :ensure t
+  :hook (eshell-load . eat-eshell-mode)
+  :config
+  (setq eat-enable-mouse t))
 
 (use-package treesit-auto
   :ensure t
@@ -158,16 +172,16 @@
 
 (use-package gptel
   :ensure t
-  :custom
-  (gptel-model "gemini-1.5-flash")
-  (gptel-backend
-   (gptel-make-gemini "Gemini"
-     :key 'gptel-api-key
-     :models '("gemini-1.5-flash" "gemini-1.5-pro")
-     :stream t))
+  :defer t
   :config
+  (setq gptel-model "gemini-1.5-flash")
   (when (getenv "GEMINI_API_KEY")
-    (setq gptel-api-key (getenv "GEMINI_API_KEY")))
+    (setq gptel-api-key (getenv "GEMINI_API_KEY"))
+    (setq gptel-backend
+          (gptel-make-gemini "Gemini"
+            :key gptel-api-key
+            :models '("gemini-1.5-flash" "gemini-1.5-pro")
+            :stream t)))
   (when (getenv "DEEPSEEK_API_KEY")
     (setq gptel-deepseek
           (gptel-make-openai "DeepSeek"
@@ -175,6 +189,13 @@
             :key (getenv "DEEPSEEK_API_KEY")
             :models '("deepseek-chat" "deepseek-coder")
             :stream t))))
+
+;; install claude-code.el
+(use-package claude-code
+  :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
