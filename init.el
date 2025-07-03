@@ -186,6 +186,18 @@
   :custom
   (markdown-fontify-code-blocks-natively t))
 
+;; Theme
+
+(defun sync-theme-with-macos ()
+  "Sync Emacs theme with macOS appearance."
+  (let ((appearance (shell-command-to-string "defaults read -g AppleInterfaceStyle 2>/dev/null")))
+    (if (string-match "Dark" appearance)
+        (load-theme 'modus-vivendi t)
+      (load-theme 'modus-operandi t))))
+
+(sync-theme-with-macos)
+(run-with-timer 0 60 'sync-theme-with-macos)
+
 ;; Environment
 
 (use-package exec-path-from-shell
