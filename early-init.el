@@ -6,22 +6,18 @@
 
 ;;; Code:
 
-;; Hide UI elements before frame creation
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
 
-;; Configure macOS frame appearance
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-appearance . dark))
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (setq ns-use-native-fullscreen t
         ns-use-thin-smoothing t))
 
-;; Toggle fullscreen with C-s-f
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
-;; Configure backup and auto-save directories
 (let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
       (auto-save-dir (expand-file-name "backups/auto-saves/" user-emacs-directory)))
   (unless (file-exists-p backup-dir)
