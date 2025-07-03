@@ -146,6 +146,11 @@
   :custom
   (which-key-idle-delay 0.3))
 
+(use-package mini-echo
+  :ensure t
+  :config
+  (mini-echo-mode 1))
+
 (use-package cape
   :ensure t
   :init
@@ -173,7 +178,6 @@
 (use-package eglot
   :ensure t
   :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
-
 
 (use-package markdown-mode
   :ensure t
@@ -224,8 +228,6 @@
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :config
   (claude-code-mode)
-
-  ;; Font configuration for claude-code using custom face
   (custom-set-faces
    '(claude-code-repl-face ((t (:family "JuliaMono")))))
 
