@@ -11,6 +11,11 @@
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
 
+;; Configure macOS frame appearance
+(when (eq system-type 'darwin)
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+
 ;; Toggle fullscreen with C-s-f
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
