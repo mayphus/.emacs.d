@@ -36,6 +36,7 @@
 
 (use-package magit
   :ensure t
+  :defer t
   :bind ("C-x g" . magit-status))
 
 (use-package diff-hl
@@ -119,10 +120,13 @@
 ;; Development Tools
 
 (use-package vterm
-  :ensure t)
+  :ensure t
+  :defer t
+  :commands vterm)
 
 (use-package eat
   :ensure t
+  :defer t
   :hook (eshell-load . eat-eshell-mode)
   :config
   (setq eat-enable-mouse t))
@@ -148,6 +152,7 @@
 
 (use-package xwidget
   :when (featurep 'xwidget-internal)
+  :defer t
   :bind (("C-c x" . xwidget-webkit-browse-url)
          :map xwidget-webkit-mode-map
          ("h" . xwidget-webkit-back)
@@ -186,6 +191,7 @@
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
   :defer t
+  :commands (copilot-mode copilot-accept-completion)
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("<tab>" . 'copilot-accept-completion)
@@ -209,6 +215,7 @@
 
 (use-package org
   :defer t
+  :mode ("\\.org\\'" . org-mode)
   :custom
   (org-startup-indented t)
   (org-pretty-entities t)
@@ -217,6 +224,7 @@
 
 (use-package denote
   :ensure t
+  :defer t
   :custom
   (denote-directory (expand-file-name "~/workspaces/org/"))
   (denote-known-keywords '("emacs" "programming" "electronics" "article" "project" "journal"))
