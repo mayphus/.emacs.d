@@ -38,8 +38,6 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;;(set-face-background 'fringe (face-background 'default))
-
 (defun my/apple-theme (appearance)
   "Set ns-appearance and modus theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
