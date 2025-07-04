@@ -1,43 +1,100 @@
-;;; init.el --- Emacs Configuration -*- lexical-binding: t; -*-
-;;; Commentary: Clean, minimal config with completion, git, and AI assistance
+;;; init.el --- Clean, minimal Emacs configuration -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Modern Emacs configuration focused on enhanced completion, git integration,
+;; and AI assistance. Optimized for development workflows and note-taking.
 
 ;;; Code:
 
 ;; Core Settings
-
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(savehist-mode 1)
+;; Backup and Auto-save Configuration
+(let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
+      (auto-save-dir (expand-file-name "backups/auto-saves/" user-emacs-directory)))
+  (dolist (dir (list backup-dir auto-save-dir))
+    (unless (file-exists-p dir)
+      (make-directory dir t)))
+  (setq backup-directory-alist `((".*" . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,auto-save-dir t))
+        auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir)))
 
+;; Basic Behavior
+(defalias 'yes-or-no-p 'y-or-n-p)
+(global-auto-revert-mode 1)
+(savehist-mode 1)
+(save-place-mode 1)
+
+(setq auto-revert-verbose nil
+      dired-auto-revert-buffer t
+      warning-minimum-level :error
+      byte-compile-warnings '(not docstrings))
+
+;; Coding Standards
 (setq-default tab-width 2
               indent-tabs-mode nil)
-
 (setq js-indent-level 2)
+
+;; Auto-formatting for JSON
 (add-hook 'json-mode-hook
   (lambda ()
     (when (< (buffer-size) 50000)
       (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))
 
-(global-auto-revert-mode 1)
-(setq auto-revert-verbose nil)
-(setq dired-auto-revert-buffer t)
-
-(setq warning-minimum-level :error)
-(setq byte-compile-warnings '(not docstrings))
-(setq native-comp-async-report-warnings-errors nil)
-
-(save-place-mode 1)
-
+;; Clean up whitespace
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;; Scrolling
+(setq scroll-step 1
+      scroll-margin 3
+      scroll-conservatively 100000
+      auto-window-vscroll nil
+      fast-but-imprecise-scrolling t
+      scroll-preserve-screen-position t)
+
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+
+;; Key Bindings
+(global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
+
+;; Server
 (require 'server)
 (unless (server-running-p)
   (server-start))
 
-;; Version Control
+;; Appearance
+(defun my/apple-theme (appearance)
+  "Set ns-appearance and modus theme based on system APPEARANCE."
+  (when (eq system-type 'darwin)
+    (pcase appearance
+      ('light (set-frame-parameter nil 'ns-appearance 'light)
+              (load-theme 'modus-operandi t)
+              (let ((bg (face-background 'default)))
+                (when (and bg (not (string= bg "unspecified-bg")))
+                  (set-face-background 'fringe bg))))
+      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
+             (load-theme 'modus-vivendi t)
+             (let ((bg (face-background 'default)))
+               (when (and bg (not (string= bg "unspecified-bg")))
+                 (set-face-background 'fringe bg)))))))
 
+(when (and (eq system-type 'darwin)
+           (boundp 'ns-system-appearance-change-functions))
+  (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
+
+;; Environment Variables
+(use-package exec-path-from-shell
+  :ensure t
+  :custom
+  (exec-path-from-shell-warn-duration-millis 2000)
+  :init
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+;; Version Control
 (use-package magit
   :ensure t
   :defer t
@@ -55,7 +112,6 @@
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
 ;; Completion System
-
 (use-package vertico
   :ensure t
   :init (vertico-mode)
@@ -112,12 +168,6 @@
   :config
   (corfu-popupinfo-mode))
 
-(use-package which-key
-  :ensure t
-  :init (which-key-mode)
-  :custom
-  (which-key-idle-delay 0.3))
-
 (use-package cape
   :ensure t
   :init
@@ -125,8 +175,37 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
-;; Development Tools
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :custom
+  (which-key-idle-delay 0.3))
 
+;; UI Enhancement
+(use-package mini-echo
+  :ensure t
+  :config
+  (mini-echo-mode 1))
+
+;; Development Tools
+(use-package eglot
+  :ensure t
+  :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
+
+(use-package treesit-auto
+  :ensure t
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :mode ("\\.md\\'" . markdown-mode)
+  :custom
+  (markdown-fontify-code-blocks-natively t))
+
+;; Terminal
 (use-package vterm
   :ensure t
   :defer t
@@ -139,25 +218,7 @@
   :config
   (setq eat-enable-mouse t))
 
-;; (use-package treesit-auto
-;;   :ensure t
-;;   :config
-;;   (treesit-auto-add-to-auto-mode-alist 'all)
-;;   (global-treesit-auto-mode))
-
-(use-package eglot
-  :ensure t
-  :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
-
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :mode ("\\.md\\'" . markdown-mode)
-  :custom
-  (markdown-fontify-code-blocks-natively t))
-
-;; Web
-
+;; Web Browser
 (use-package xwidget
   :when (featurep 'xwidget-internal)
   :defer t
@@ -174,60 +235,36 @@
   :custom
   (xwidget-webkit-enable-plugins t))
 
-;; UI Enhancement
-
-(use-package mini-echo
-  :ensure t
-  :config
-  (mini-echo-mode 1))
-
-;; Environment
-
-(use-package exec-path-from-shell
-  :ensure t
-  :custom
-  (exec-path-from-shell-warn-duration-millis 2000)
-  :init
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
-
 ;; AI Assistance
-
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :config
   (claude-code-mode)
-  (custom-set-faces
-   '(claude-code-repl-face ((t (:family "JuliaMono")))))
-
   :bind-keymap ("C-c c" . claude-code-command-map))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
   :defer t
-  :commands (copilot-mode copilot-accept-completion)
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word))
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-<tab>" . copilot-accept-completion-by-word))
+  :bind (("C-c M-c" . copilot-mode)
+         ("C-c M-n" . copilot-next-completion)
+         ("C-c M-p" . copilot-previous-completion)
+         ("C-c M-f" . copilot-accept-completion-by-line))
   :custom
-  (copilot-max-char -1)  ; No character limit
+  (copilot-max-char -1)
   (copilot-indent-offset-warning-disable t)
   :config
   (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp"))
   (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
-  (add-to-list 'copilot-major-mode-alist '("ts" . "typescript"))
+  (add-to-list 'copilot-major-mode-alist '("ts" . "typescript")))
 
-  :bind (("C-c M-c" . copilot-mode)
-         ("C-c M-n" . copilot-next-completion)
-         ("C-c M-p" . copilot-previous-completion)
-         ("C-c M-f" . copilot-accept-completion-by-line)))
-
-;; Org Mode
-
+;; Note-taking and Organization
 (use-package org
   :defer t
   :mode ("\\.org\\'" . org-mode)
@@ -247,22 +284,21 @@
   (denote-sort-keywords t)
   (denote-file-type nil)
   (denote-prompts '(title keywords))
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n c" . denote-region)
-   ("C-c n N" . denote-type)
-   ("C-c n d" . denote-date)
-   ("C-c n z" . denote-signature)
-   ("C-c n s" . denote-subdirectory)
-   ("C-c n t" . denote-template)
-   ("C-c n i" . denote-link)
-   ("C-c n I" . denote-add-links)
-   ("C-c n b" . denote-backlinks)
-   ("C-c n f f" . denote-find-link)
-   ("C-c n f b" . denote-find-backlink)
-   ("C-c n r" . denote-rename-file)
-   ("C-c n R" . denote-rename-file-using-front-matter)
-   ("C-c n o" . denote-org-capture))
+  :bind (("C-c n n" . denote)
+         ("C-c n c" . denote-region)
+         ("C-c n N" . denote-type)
+         ("C-c n d" . denote-date)
+         ("C-c n z" . denote-signature)
+         ("C-c n s" . denote-subdirectory)
+         ("C-c n t" . denote-template)
+         ("C-c n i" . denote-link)
+         ("C-c n I" . denote-add-links)
+         ("C-c n b" . denote-backlinks)
+         ("C-c n f f" . denote-find-link)
+         ("C-c n f b" . denote-find-backlink)
+         ("C-c n r" . denote-rename-file)
+         ("C-c n R" . denote-rename-file-using-front-matter)
+         ("C-c n o" . denote-org-capture))
   :config
   (denote-fontify-links-mode-maybe)
   (setq denote-dired-directories (list denote-directory))

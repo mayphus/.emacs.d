@@ -9,8 +9,8 @@ This is an Emacs configuration directory that provides a modern, minimalist setu
 ## Key Configuration Architecture
 
 ### Core Components
-- `init.el` - Main configuration file with package setup and key bindings
-- `early-init.el` - Early initialization for UI elements and backup configuration
+- `init.el` - Main configuration file with package setup, key bindings, and most settings
+- `early-init.el` - Minimal early initialization for package system, UI elements, and native compilation
 - `lisp/` - Directory for custom Elisp packages (auto-created when needed)
 - `custom.el` - Auto-generated customization file (if exists)
 
@@ -61,8 +61,8 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - `C-s-f` - toggle fullscreen
 
 ### Directory Structure
-- `backups/backups/` - Backup files (auto-created in early-init.el)
-- `backups/auto-saves/` - Auto-save files (auto-created in early-init.el)
+- `backups/backups/` - Backup files (auto-created in init.el)
+- `backups/auto-saves/` - Auto-save files (auto-created in init.el)
 - `elpa/` - Package installation directory
 - `lisp/` - Custom Elisp packages (auto-created when needed)
 - `eshell/` - Eshell configuration (auto-created)
@@ -96,10 +96,10 @@ The configuration includes claude-code.el for AI assistance with multi-project s
 ### Configuration Conventions
 - All settings use lexical binding
 - Packages configured immediately after declaration
-- File organization: early-init.el for UI and backups, init.el for packages and behavior
+- File organization: early-init.el for minimal essential startup, init.el for packages and behavior
 - Custom settings isolated to separate custom.el file
-- Backup files organized in `backups/backups/` subdirectory (configured in early-init.el)
-- Auto-save files organized in `backups/auto-saves/` subdirectory (configured in early-init.el)
+- Backup files organized in `backups/backups/` subdirectory (configured in init.el)
+- Auto-save files organized in `backups/auto-saves/` subdirectory (configured in init.el)
 - Tab width set to 2 spaces, no tabs mode
 - JSON auto-formatting on save (files < 50KB only)
 - Global auto-revert mode enabled
