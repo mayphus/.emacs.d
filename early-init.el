@@ -30,7 +30,6 @@
 (setq-default inhibit-startup-screen t
               inhibit-startup-echo-area-message t
               inhibit-default-init t
-              initial-major-mode 'fundamental-mode
               initial-scratch-message nil)
 
 ;; Frame aesthetics: minimal and purposeful
