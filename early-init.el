@@ -31,9 +31,11 @@
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'modus-operandi t))
+              (load-theme 'modus-operandi t)
+              (set-face-background 'fringe (face-background 'default)))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'modus-vivendi t)))))
+             (load-theme 'modus-vivendi t)
+             (set-face-background 'fringe (face-background 'default))))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))
