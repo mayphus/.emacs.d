@@ -113,6 +113,8 @@
          ("C-x C-r" . consult-recent-file)
          ("M-y" . consult-yank-pop)
          ("M-g g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-g o" . consult-outline)
          ("M-s d" . consult-find)
          ("M-s g" . consult-grep)
          ("M-s r" . consult-ripgrep)))
@@ -156,7 +158,8 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-symbol))
 
 ;; Development Tools
 
