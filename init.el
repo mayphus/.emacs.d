@@ -161,6 +161,23 @@
   :custom
   (markdown-fontify-code-blocks-natively t))
 
+;; Web
+
+(use-package xwidget
+  :when (featurep 'xwidget-internal)
+  :bind (("C-c x" . xwidget-webkit-browse-url)
+         :map xwidget-webkit-mode-map
+         ("h" . xwidget-webkit-back)
+         ("l" . xwidget-webkit-forward)
+         ("r" . xwidget-webkit-reload)
+         ("q" . quit-window)
+         ("g" . xwidget-webkit-browse-url)
+         ("+" . xwidget-webkit-zoom-in)
+         ("-" . xwidget-webkit-zoom-out)
+         ("=" . xwidget-webkit-zoom-out))
+  :custom
+  (xwidget-webkit-enable-plugins t))
+
 ;; Environment
 
 (use-package exec-path-from-shell
