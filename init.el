@@ -102,10 +102,12 @@
 
 (use-package forge
   :ensure t
+  :defer t
   :after magit)
 
 (use-package diff-hl
   :ensure t
+  :defer t
   :config
   (global-diff-hl-mode)
   (diff-hl-flydiff-mode)
@@ -190,6 +192,7 @@
 ;; Development Tools
 (use-package eglot
   :ensure t
+  :defer t
   :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
 
 (use-package treesit-auto
@@ -240,6 +243,7 @@
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :defer t
   :config
   (claude-code-mode)
   :bind-keymap ("C-c c" . claude-code-command-map))
