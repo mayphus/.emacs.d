@@ -21,6 +21,37 @@
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
+(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
+  (when (file-directory-p lisp-dir)
+    (add-to-list 'load-path lisp-dir)
+    (condition-case err
+        (let ((max-depth 3)
+              (visited-dirs (make-hash-table :test 'equal)))
+          (defun add-lisp-subdirs (dir depth)
+            "Add subdirectories to load-path with depth limit and symlink protection."
+            (when (and (< depth max-depth)
+                       (not (gethash (file-truename dir) visited-dirs)))
+              (puthash (file-truename dir) t visited-dirs)
+              (dolist (subdir (ignore-errors (directory-files dir t "^[^.]")))
+                (when (and subdir
+                           (file-directory-p subdir)
+                           (not (file-symlink-p subdir)))
+                  (add-to-list 'load-path subdir)
+                  (add-lisp-subdirs subdir (1+ depth))))))
+          (add-lisp-subdirs lisp-dir 0))
+      (error
+       (message "Warning: Failed to load some lisp subdirectories: %s"
+                (error-message-string err))))))
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(use-package mini-echo
+  :ensure t
+  :config
+  (mini-echo-mode 1))
+
 (let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
       (auto-save-dir (expand-file-name "backups/auto-saves/" user-emacs-directory)))
   (unless (file-exists-p backup-dir)
