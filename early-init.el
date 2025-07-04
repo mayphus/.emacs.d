@@ -26,6 +26,19 @@
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
+(defun my/apple-theme (appearance)
+  "Set ns-appearance and modus theme based on system APPEARANCE."
+  (when (eq system-type 'darwin)
+    (pcase appearance
+      ('light (set-frame-parameter nil 'ns-appearance 'light)
+              (load-theme 'modus-operandi t))
+      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
+             (load-theme 'modus-vivendi t)))))
+
+(when (and (eq system-type 'darwin)
+           (boundp 'ns-system-appearance-change-functions))
+  (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
+
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir)
