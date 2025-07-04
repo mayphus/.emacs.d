@@ -65,10 +65,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(use-package mini-echo
-  :ensure t
-  :config
-  (mini-echo-mode 1))
 
 (let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
       (auto-save-dir (expand-file-name "backups/auto-saves/" user-emacs-directory)))

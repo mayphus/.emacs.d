@@ -24,6 +24,10 @@
 (setq auto-revert-verbose nil)
 (setq dired-auto-revert-buffer t)
 
+(setq warning-minimum-level :error)
+(setq byte-compile-warnings '(not docstrings))
+(setq native-comp-async-report-warnings-errors nil)
+
 (save-place-mode 1)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -169,6 +173,13 @@
          ("=" . xwidget-webkit-zoom-out))
   :custom
   (xwidget-webkit-enable-plugins t))
+
+;; UI Enhancement
+
+(use-package mini-echo
+  :ensure t
+  :config
+  (mini-echo-mode 1))
 
 ;; Environment
 
