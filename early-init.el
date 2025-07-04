@@ -2,7 +2,8 @@
 
 ;;; Commentary:
 ;; Early initialization settings that need to be applied before the first frame
-;; is created.  This includes UI element removal and frame appearance.
+;; is created.  This includes UI element removal, frame appearance, native
+;; compilation optimization, automatic theme switching, and backup configuration.
 
 ;;; Code:
 
@@ -10,10 +11,8 @@
            (native-comp-available-p))
   (setq native-comp-async-report-warnings-errors nil
         native-comp-deferred-compilation t
-        native-comp-speed 2
-        native-comp-async-jobs 4)
-  (add-to-list 'native-comp-eln-load-path
-               (expand-file-name "eln-cache/" user-emacs-directory)))
+        native-comp-speed 3
+        native-comp-async-jobs 4))
 
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -26,16 +25,35 @@
 
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
+(setq inhibit-startup-message t
+      scroll-step 1
+      scroll-margin 3
+      scroll-conservatively 100000
+      auto-window-vscroll nil
+      fast-but-imprecise-scrolling t
+      scroll-preserve-screen-position t)
+
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scroll-precision-mode 1))
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;;(set-face-background 'fringe (face-background 'default))
+
 (defun my/apple-theme (appearance)
   "Set ns-appearance and modus theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
               (load-theme 'modus-operandi t)
-              (set-face-background 'fringe (face-background 'default)))
+              (let ((bg (face-background 'default)))
+                (when (and bg (not (string= bg "unspecified-bg")))
+                  (set-face-background 'fringe bg))))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
              (load-theme 'modus-vivendi t)
-             (set-face-background 'fringe (face-background 'default))))))
+             (let ((bg (face-background 'default)))
+               (when (and bg (not (string= bg "unspecified-bg")))
+                 (set-face-background 'fringe bg)))))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))
@@ -43,25 +61,7 @@
 
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
-    (add-to-list 'load-path lisp-dir)
-    (condition-case err
-        (let ((max-depth 3)
-              (visited-dirs (make-hash-table :test 'equal)))
-          (defun add-lisp-subdirs (dir depth)
-            "Add subdirectories to load-path with depth limit and symlink protection."
-            (when (and (< depth max-depth)
-                       (not (gethash (file-truename dir) visited-dirs)))
-              (puthash (file-truename dir) t visited-dirs)
-              (dolist (subdir (ignore-errors (directory-files dir t "^[^.]")))
-                (when (and subdir
-                           (file-directory-p subdir)
-                           (not (file-symlink-p subdir)))
-                  (add-to-list 'load-path subdir)
-                  (add-lisp-subdirs subdir (1+ depth))))))
-          (add-lisp-subdirs lisp-dir 0))
-      (error
-       (message "Warning: Failed to load some lisp subdirectories: %s"
-                (error-message-string err))))))
+    (add-to-list 'load-path lisp-dir)))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)

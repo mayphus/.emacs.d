@@ -26,27 +26,11 @@
 
 (save-place-mode 1)
 
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-(setq inhibit-startup-message t)
-
-(setq scroll-step 1
-      scroll-margin 3
-      scroll-conservatively 100000
-      auto-window-vscroll nil
-      fast-but-imprecise-scrolling t
-      scroll-preserve-screen-position t)
-
-(when (fboundp 'pixel-scroll-precision-mode)
-  (pixel-scroll-precision-mode 1))
 
 (require 'server)
 (unless (server-running-p)
   (server-start))
-
-(set-face-background 'fringe (face-background 'default))
 
 ;; Version Control
 
@@ -130,8 +114,7 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-symbol))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 ;; Development Tools
 
