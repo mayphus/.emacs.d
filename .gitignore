@@ -1,20 +1,20 @@
-# Backup and auto-save directories
+# Backup and auto-save files
 backups/
-
-# Auto-save list
 auto-save-list/
-
-# Emacs temp files
 *~
 \#*\#
 .\#*
 
 # Package archives and state
 elpa/
+straight/
+quelpa/
 transient/
 projects.eld
 places.eld
+places
 history
+recentf
 
 # Custom settings (may contain personal info)
 custom.el
@@ -28,12 +28,37 @@ eshell/
 # Projectile bookmarks
 projectile-bookmarks.eld
 
-# Auto-save list
-auto-save-list/
+# Bookmark files
+bookmarks
 
-# Claude
-.claude/
-
-# Tramp
+# TRAMP connections
 tramp
-places
+
+# Session files
+session.*
+desktop
+desktop.lock
+
+# Network security
+network-security.data
+
+# LSP and language server files
+.lsp-session-*
+lsp-session-*
+
+# Cache directories
+cache/
+var/
+
+# Temporary files
+*.tmp
+*.temp
+
+# AI/LLM integration
+.claude/
+.codex/
+.openai/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
