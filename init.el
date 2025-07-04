@@ -186,50 +186,6 @@
   :custom
   (markdown-fontify-code-blocks-natively t))
 
-;; Theme
-
-(defun sync-theme-with-macos (&optional appearance)
-  "Sync Emacs theme with macOS appearance.
-APPEARANCE can be 'light or 'dark, or nil to auto-detect."
-  (let ((dark-mode (or (eq appearance 'dark)
-                       (and (not appearance)
-                            (string-match "Dark"
-                                        (shell-command-to-string
-                                         "defaults read -g AppleInterfaceStyle 2>/dev/null"))))))
-    (if dark-mode
-        (progn
-          (load-theme 'modus-vivendi t)
-          (set-frame-parameter nil 'ns-appearance 'dark)
-          (set-face-background 'fringe (face-background 'default)))
-      (load-theme 'modus-operandi t)
-      (set-frame-parameter nil 'ns-appearance 'light)
-      (set-face-background 'fringe (face-background 'default)))))
-
-;; Use native hooks if available, otherwise fallback to osascript polling
-(cond
- ;; emacs-plus with native system appearance hooks
- ((boundp 'ns-system-appearance-change-functions)
-  (add-hook 'ns-system-appearance-change-functions #'sync-theme-with-macos)
-  (sync-theme-with-macos))
-
- ;; emacs-mac with effective appearance hooks
- ((boundp 'mac-effective-appearance-change-hook)
-  (add-hook 'mac-effective-appearance-change-hook #'sync-theme-with-macos)
-  (sync-theme-with-macos))
-
- ;; Fallback: periodic checking with osascript (more reliable than defaults)
- (t
-  (defun check-system-appearance ()
-    "Check system appearance using osascript."
-    (let ((dark-mode (string= "true"
-                             (string-trim
-                              (shell-command-to-string
-                               "osascript -e 'tell application \"System Events\" to tell appearance preferences to return dark mode'")))))
-      (sync-theme-with-macos (if dark-mode 'dark 'light))))
-
-  (sync-theme-with-macos)
-  (run-with-timer 0 5 'check-system-appearance)))
-
 ;; Environment
 
 (use-package exec-path-from-shell

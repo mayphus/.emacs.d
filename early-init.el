@@ -15,6 +15,10 @@
   (setq ns-use-native-fullscreen t
         ns-use-thin-smoothing t))
 
+(load-theme 'modus-operandi t)
+(set-frame-parameter nil 'ns-appearance 'light)
+(set-face-background 'fringe (face-background 'default))
+
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 
 (let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
