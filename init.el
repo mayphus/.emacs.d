@@ -194,35 +194,10 @@
   (exec-path-from-shell-warn-duration-millis 2000)
   :init
   (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-copy-envs
-     '("OPENAI_API_KEY"
-       "GEMINI_API_KEY"
-       "DEEPSEEK_API_KEY"))
     (exec-path-from-shell-initialize)))
 
 ;; AI Assistance
 
-(use-package gptel
-  :ensure t
-  :defer t
-  :config
-  (setq gptel-model "gemini-1.5-flash")
-  (when (getenv "GEMINI_API_KEY")
-    (setq gptel-api-key (getenv "GEMINI_API_KEY"))
-    (setq gptel-backend
-          (gptel-make-gemini "Gemini"
-            :key gptel-api-key
-            :models '("gemini-1.5-flash" "gemini-1.5-pro")
-            :stream t)))
-  (when (getenv "DEEPSEEK_API_KEY")
-    (setq gptel-deepseek
-          (gptel-make-openai "DeepSeek"
-            :host "api.deepseek.com"
-            :key (getenv "DEEPSEEK_API_KEY")
-            :models '("deepseek-chat" "deepseek-coder")
-            :stream t))))
-
-;; install claude-code.el
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)

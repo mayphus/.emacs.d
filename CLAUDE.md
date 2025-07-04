@@ -27,13 +27,16 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **eglot** - LSP support for Python, JS, TS, Go, Rust
 - **which-key** - Key binding discovery (0.3s delay)
 - **claude-code** - Integration with Claude Code CLI (bound to `C-c c`)
-- **ai-cli** - Multi-AI CLI interface with transient menu (bound to `C-c a`)
-- **gptel** - Multi-backend AI support (Gemini default, DeepSeek available)
-- **github-reports** - GitHub integration tools (bound to `C-c g`)
+- **copilot** - GitHub Copilot integration with tab completion
+- **diff-hl** - Git diff highlighting in buffers
+- **mini-echo** - Minimal echo area enhancements
+- **cape** - Completion at point extensions
+- **vterm** - Full terminal emulator
+- **eat** - Emulate A Terminal (eshell integration)
 - **denote** - Note-taking system for org files (bound to `C-c n`)
 - **org** - Enhanced org-mode with pretty entities and inline images
 - **markdown-mode** - Enhanced markdown editing
-- **standard-themes** - Light theme (standard-light)
+- **modus-themes** - Light theme (modus-operandi)
 - **exec-path-from-shell** - Environment variable importing
 
 ### Key Bindings Structure
@@ -41,8 +44,9 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
   - `C-c c p` - Switch between Claude project sessions
   - `C-c c P` - List all active Claude project sessions
   - `C-u C-c c k` - Kill specific project's Claude session
-- `C-c '` - AI CLI Interface (transient menu for Claude, Gemini, Codex with session management)
-- `C-c g` - GitHub Reports command map (d=daily, w=weekly, r=repo summary, i=insights)
+- `C-c M-c` - Toggle Copilot mode
+- `C-c M-n/p` - Next/previous Copilot completion
+- `C-c M-f` - Accept Copilot completion by line
 - `C-c n` - Denote note-taking commands
 - `C-x g` - magit-status (git interface)
 - `C-s` - consult-line (enhanced search)
@@ -60,7 +64,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - `backups/backups/` - Backup files (auto-created in early-init.el)
 - `backups/auto-saves/` - Auto-save files (auto-created in early-init.el)
 - `elpa/` - Package installation directory
-- `lisp/` - Custom Elisp packages (contains meow-config.el and claude-code.el/)
+- `lisp/` - Custom Elisp packages (auto-created when needed)
 - `eshell/` - Eshell configuration (auto-created)
 - Root contains only essential configuration files
 
@@ -102,9 +106,7 @@ The configuration includes claude-code.el for AI assistance with multi-project s
 - Save-place mode for cursor position memory
 - Treesitter auto-mode for enhanced syntax highlighting
 - LSP support via Eglot for Python, JS, TS, Go, Rust
-- Fixed light theme (standard-light)
-- Environment variable importing for API keys (OPENAI_API_KEY, GEMINI_API_KEY, DEEPSEEK_API_KEY)
-- Multiple AI backend support through GPTel (Gemini default, DeepSeek available)
+- Fixed light theme (modus-operandi)
 - Emacs server auto-start for external connections
 
 ### Note-Taking with Denote
@@ -138,30 +140,19 @@ The configuration includes Denote for structured note-taking:
 ### AI Integration Features
 The configuration provides comprehensive AI support:
 
-#### AI CLI Interface (`C-c '`)
-Modern transient menu interface for multiple AI models:
-- **Start Sessions**: Claude, Gemini, Codex (project or directory-based)
-- **Send Text**: Send buffer/region to any AI model
-- **Session Management**: List, switch, and kill active sessions
-- **Status Tracking**: View session status (active/idle/dead) and directories
-- **Smart Defaults**: Auto-detect project context and recent sessions
+#### GitHub Copilot Integration
+AI-powered code completion and suggestions:
+- **Tab Completion**: Accept suggestions with Tab
+- **Line-by-line**: Accept partial completions
+- **Multi-language Support**: Works across programming languages
+- **Context-aware**: Understands current code context
 
 Key Commands:
-- `c/C` - Start Claude (project/directory)
-- `g/G` - Start Gemini (project/directory)  
-- `x/X` - Start Codex (project/directory)
-- `s/r/t` - Send text to Claude/Gemini/Codex
-- `R` - Send region to most recent session
-- `l` - List active sessions with status
-- `w` - Switch between sessions
-- `k/K` - Kill session/all sessions
-- `?` - Help, `q` - Quit menu
-
-#### GPTel Integration
-- Multiple backend support: Gemini (default) and DeepSeek
-- Easy backend switching via key bindings
-- Environment variable based API key management
-- Streaming support for real-time responses
+- `Tab` - Accept Copilot completion
+- `C-Tab` - Accept completion by word
+- `C-c M-c` - Toggle Copilot mode
+- `C-c M-n/p` - Next/previous completion
+- `C-c M-f` - Accept completion by line
 
 #### Claude Code Integration
 - Full Claude Code CLI integration
