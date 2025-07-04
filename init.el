@@ -1,5 +1,6 @@
 ;;; init.el --- Emacs Configuration -*- lexical-binding: t; -*-
 ;;; Commentary: Clean, minimal config with completion, git, and AI assistance
+
 ;;; Code:
 
 ;; Core Settings
@@ -44,6 +45,8 @@
 (require 'server)
 (unless (server-running-p)
   (server-start))
+
+(set-face-background 'fringe (face-background 'default))
 
 ;; Version Control
 
