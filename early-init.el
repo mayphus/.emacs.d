@@ -6,13 +6,21 @@
 
 ;;; Code:
 
+(when (and (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+  (setq native-comp-async-report-warnings-errors nil
+        native-comp-deferred-compilation t
+        native-comp-speed 2
+        native-comp-async-jobs 4)
+  (add-to-list 'native-comp-eln-load-path
+               (expand-file-name "eln-cache/" user-emacs-directory)))
+
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (set-frame-parameter nil 'ns-appearance 'light)
   (setq ns-use-native-fullscreen t
         ns-use-thin-smoothing t))
 

@@ -144,11 +144,11 @@
   :config
   (setq eat-enable-mouse t))
 
-(use-package treesit-auto
-  :ensure t
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+;; (use-package treesit-auto
+;;   :ensure t
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all)
+;;   (global-treesit-auto-mode))
 
 (use-package eglot
   :ensure t

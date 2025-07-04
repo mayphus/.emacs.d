@@ -49,6 +49,7 @@ lsp-session-*
 # Cache directories
 cache/
 var/
+eln-cache/
 
 # Temporary files
 *.tmp
