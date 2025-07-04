@@ -60,6 +60,9 @@ eln-cache/
 .codex/
 .openai/
 
+# Forge database
+forge-database.sqlite
+
 # OS-specific files
 .DS_Store
 Thumbs.db

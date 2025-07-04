@@ -39,6 +39,10 @@
   :defer t
   :bind ("C-x g" . magit-status))
 
+(use-package forge
+  :ensure t
+  :after magit)
+
 (use-package diff-hl
   :ensure t
   :config
