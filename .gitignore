@@ -70,3 +70,6 @@ forge-database.sqlite
 # OS-specific files
 .DS_Store
 Thumbs.db
+
+# Project files
+projects
