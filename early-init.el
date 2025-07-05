@@ -70,4 +70,10 @@
 ;; Suppression of frivolous warnings for the focused mind
 (setq warning-suppress-types '((comp)))
 
+;; Load mini-echo
+(use-package mini-echo
+  :ensure t
+  :config
+  (mini-echo-mode 1))
+
 ;;; early-init.el ends here

@@ -59,6 +59,7 @@
 
 ;; Key Bindings
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
+(global-set-key (kbd "C-c e") 'eshell)
 
 ;; Server
 (require 'server)
@@ -97,17 +98,14 @@
 ;; Version Control
 (use-package magit
   :ensure t
-  :defer t
   :bind ("C-x g" . magit-status))
 
 (use-package forge
   :ensure t
-  :defer t
   :after magit)
 
 (use-package diff-hl
   :ensure t
-  :defer t
   :config
   (global-diff-hl-mode)
   (diff-hl-flydiff-mode)
@@ -182,12 +180,6 @@
   :init (which-key-mode)
   :custom
   (which-key-idle-delay 0.3))
-
-;; UI Enhancement
-(use-package mini-echo
-  :ensure t
-  :config
-  (mini-echo-mode 1))
 
 ;; Development Tools
 (use-package eglot
