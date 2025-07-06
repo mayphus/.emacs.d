@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 ;; Modern Emacs configuration focused on enhanced completion, git integration,
-;; and AI assistance. Optimized for development workflows and note-taking.
+;; and AI assistance.  Optimized for development workflows and note-taking.
 
 ;;; Code:
 
@@ -133,20 +133,21 @@
 
 (use-package consult-notes
   :ensure t
-  :bind (("C-c n c" . consult-notes)
-         ("C-c n a" . consult-notes-search-in-all-notes))
+  :commands (consult-notes consult-notes-search-in-all-notes)
   :custom
   (consult-notes-file-dir-sources
    `(("Notes" ?n "~/workspace/notes/")
      ("Journal" ?j "~/workspace/notes/journal/")))
+  (consult-notes-use-find-command t)
   :config
-  ;; Disable org-headings-mode temporarily - this is the source of the cache error
-  ;; You can still use consult-notes for file-based note searching
-  ;; (consult-notes-org-headings-mode)
-  
   ;; Initialize the cache
   (when (fboundp 'consult-notes-cache-setup)
-    (consult-notes-cache-setup)))
+    (consult-notes-cache-setup))
+
+  ;; Disable org-headings-mode to avoid cache issues
+  ;; Re-enable once org-element-cache issues are resolved
+  ;; (consult-notes-org-headings-mode)
+  )
 
 (use-package embark
   :ensure t
@@ -332,21 +333,18 @@
   (add-to-list 'copilot-major-mode-alist '("ts" . "typescript")))
 
 ;; Note-taking and Organization
-;; Global note search functions
-(defun my/consult-notes-find ()
-  "Find notes by filename."
-  (interactive)
-  (consult-find "~/workspace/notes/"))
+;; Create a proper keymap for notes
+(defvar my/notes-map (make-sparse-keymap)
+  "Keymap for note-taking commands.")
 
-(defun my/consult-notes-search ()
-  "Search notes content."
-  (interactive)
-  (consult-ripgrep "~/workspace/notes/"))
+(define-key my/notes-map (kbd "n") 'org-capture)
+(define-key my/notes-map (kbd "c") 'consult-notes)
+(define-key my/notes-map (kbd "s") 'consult-notes-search-in-all-notes)
+(define-key my/notes-map (kbd "f") (lambda () (interactive) (consult-find "~/workspace/notes/")))
+(define-key my/notes-map (kbd "r") (lambda () (interactive) (consult-ripgrep "~/workspace/notes/")))
+(define-key my/notes-map (kbd "d") 'deft)
 
-;; Note keymap with C-c n prefix
-(global-set-key (kbd "C-c n n") 'org-capture)
-(global-set-key (kbd "C-c n f") 'my/consult-notes-find)
-(global-set-key (kbd "C-c n s") 'my/consult-notes-search)
+(global-set-key (kbd "C-c n") my/notes-map)
 
 (use-package org
   :defer t
@@ -375,13 +373,7 @@
   ;; Configure org-element cache for better performance
   (setq org-element-use-cache t)
   (setq org-element-cache-persistent t)
-  
-  ;; Add hook to ensure cache is active when org files are opened
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (when (fboundp 'org-element-cache-reset)
-                (org-element-cache-reset 'all))))
-  
+
   (defun my/org-capture-process-tags ()
     "Process tags input for org capture."
     (let* ((tags-input (read-string "Tags: "))
@@ -393,11 +385,11 @@
           (concat ":" (mapconcat 'identity tags ":") ":")
         ""))))
 
-;; Deft for note browsing
+;; Deft for alternative note browsing
 (use-package deft
   :ensure t
   :defer t
-  :bind ("C-c n d" . deft)
+  :commands deft
   :custom
   (deft-directory "~/workspace/notes/")
   (deft-recursive t)
@@ -406,7 +398,11 @@
   (deft-text-mode 'org-mode)
   (deft-use-filename-as-title t)
   (deft-use-filter-string-for-filename t)
-  (deft-auto-save-interval 0))
+  (deft-auto-save-interval 0)
+  ;; Optimize for performance
+  (deft-strip-summary-regexp "\\(\\*+\\|#+\\w+:.*\\)")
+  ;; Ignore dot files, hidden files, CLAUDE.md, and README.org files
+  (deft-ignore-file-regexp "\\(?:\\.\\|#\\|~\\|CLAUDE\\.md\\|README\\.org\\)"))
 
 
 ;;; init.el ends here
