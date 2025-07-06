@@ -209,6 +209,12 @@
   :config
   (setq eat-enable-mouse t))
 
+(use-package eshell
+  :defer t
+  :bind (:map eshell-mode-map
+         ("C-r" . consult-history)
+         ("C-p" . eshell-previous-input)
+         ("C-n" . eshell-next-input)))
 
 ;; Dired with GNU ls
 (when (executable-find "gls")
