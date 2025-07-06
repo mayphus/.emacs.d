@@ -243,7 +243,7 @@
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :defer t
   :config (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map)
+  :bind-keymap ("C-c a" . claude-code-command-map)
   :custom-face
   (claude-code-repl-face ((t (:family "JuliaMono"))))
   :config
