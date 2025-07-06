@@ -87,12 +87,18 @@
               (load-theme 'modus-operandi t)
               (let ((bg (face-background 'default)))
                 (when (and bg (not (string= bg "unspecified-bg")))
-                  (set-face-background 'fringe bg))))
+                  (set-face-background 'fringe bg)))
+              ;; Set Claude CLI theme to light
+              (when (executable-find "claude")
+                (shell-command "claude config set -g theme light" nil nil)))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
              (load-theme 'modus-vivendi t)
              (let ((bg (face-background 'default)))
                (when (and bg (not (string= bg "unspecified-bg")))
-                 (set-face-background 'fringe bg)))))))
+                 (set-face-background 'fringe bg)))
+             ;; Set Claude CLI theme to dark
+             (when (executable-find "claude")
+               (shell-command "claude config set -g theme dark" nil nil))))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))
