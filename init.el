@@ -26,6 +26,7 @@
 (global-auto-revert-mode 1)
 (savehist-mode 1)
 (save-place-mode 1)
+(global-visual-line-mode)
 
 ;; Disable audible bell
 (setq ring-bell-function 'ignore)
