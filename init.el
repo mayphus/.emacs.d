@@ -66,26 +66,6 @@
 (unless (server-running-p)
   (server-start))
 
-;; Appearance
-(defun my/apple-theme (appearance)
-  "Set ns-appearance and modus theme based on system APPEARANCE."
-  (when (eq system-type 'darwin)
-    (pcase appearance
-      ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'modus-operandi t)
-              (let ((bg (face-background 'default)))
-                (when (and bg (not (string= bg "unspecified-bg")))
-                  (set-face-background 'fringe bg))))
-      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'modus-vivendi t)
-             (let ((bg (face-background 'default)))
-               (when (and bg (not (string= bg "unspecified-bg")))
-                 (set-face-background 'fringe bg)))))))
-
-(when (and (eq system-type 'darwin)
-           (boundp 'ns-system-appearance-change-functions))
-  (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
-
 ;; Environment Variables
 (use-package exec-path-from-shell
   :ensure t
@@ -143,7 +123,9 @@
          ("M-g o" . consult-outline)
          ("M-s d" . consult-find)
          ("M-s g" . consult-grep)
-         ("M-s r" . consult-ripgrep)))
+         ("M-s r" . consult-ripgrep))
+  :custom
+  (consult-buffer-filter '("\\` " "\\*copilot")))
 
 (use-package embark
   :ensure t
@@ -177,9 +159,7 @@
 
 (use-package which-key
   :ensure t
-  :init (which-key-mode)
-  :custom
-  (which-key-idle-delay 0.3))
+  :init (which-key-mode))
 
 ;; Development Tools
 (use-package eglot
@@ -307,7 +287,7 @@
       (if (string= result "~/")
           user-emacs-directory
         result)))
-  
+
   (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package copilot

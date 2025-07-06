@@ -41,7 +41,7 @@
 ;; Darwin-specific optimizations for the enlightened macOS user
 (when (eq system-type 'darwin)
   (push '(ns-transparent-titlebar . t) default-frame-alist)
-  (push '(ns-appearance . dark) default-frame-alist)
+  ;;(push '(ns-appearance . light) default-frame-alist)
   (setq ns-use-native-fullscreen t
         ns-use-thin-smoothing t
         ns-pop-up-frames nil
@@ -77,5 +77,25 @@
 
 ;; Suppression of frivolous warnings for the focused mind
 (setq warning-suppress-types '((comp) (bytecomp)))
+
+;; Theme Management
+(defun my/apple-theme (appearance)
+  "Set ns-appearance and modus theme based on system APPEARANCE."
+  (when (eq system-type 'darwin)
+    (pcase appearance
+      ('light (set-frame-parameter nil 'ns-appearance 'light)
+              (load-theme 'modus-operandi t)
+              (let ((bg (face-background 'default)))
+                (when (and bg (not (string= bg "unspecified-bg")))
+                  (set-face-background 'fringe bg))))
+      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
+             (load-theme 'modus-vivendi t)
+             (let ((bg (face-background 'default)))
+               (when (and bg (not (string= bg "unspecified-bg")))
+                 (set-face-background 'fringe bg)))))))
+
+(when (and (eq system-type 'darwin)
+           (boundp 'ns-system-appearance-change-functions))
+  (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
 
 ;;; early-init.el ends here
