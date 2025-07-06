@@ -214,6 +214,12 @@
   :config
   (setq eat-enable-mouse t))
 
+;; File Management
+(use-package dired-sidebar
+  :ensure t
+  :defer t
+  :bind ("C-c d" . dired-sidebar-toggle-sidebar))
+
 ;; Web Browser
 (use-package xwidget
   :when (featurep 'xwidget-internal)
@@ -238,7 +244,33 @@
   :defer t
   :config
   (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map))
+  (defun claude-code-toggle-sidebar ()
+    "Toggle Claude Code sidebar visibility."
+    (interactive)
+    (let ((claude-window (get-buffer-window (current-buffer))))
+      (if (and claude-window (string-match-p "\\*claude.*\\*" (buffer-name)))
+          (if (window-parameter claude-window 'window-side)
+              (delete-window claude-window)
+            (display-buffer (current-buffer)
+                           '((display-buffer-in-side-window)
+                             (side . right)
+                             (window-width . 0.33)
+                             (window-parameters . ((no-delete-other-windows . t))))))
+        (let ((claude-buf (seq-find (lambda (buf)
+                                     (string-match-p "\\*claude.*\\*" (buffer-name buf)))
+                                   (buffer-list))))
+          (when claude-buf
+            (let ((existing-window (get-buffer-window claude-buf)))
+              (if existing-window
+                  (delete-window existing-window)
+                (display-buffer claude-buf
+                               '((display-buffer-in-side-window)
+                                 (side . right)
+                                 (window-width . 0.33)
+                                 (window-parameters . ((no-delete-other-windows . t))))))))))))
+
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :bind ("C-c C-t" . claude-code-toggle-sidebar))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)

@@ -20,11 +20,11 @@
 ;; Native compilation: embrace the machine
 (when (and (fboundp 'native-comp-available-p)
            (native-comp-available-p))
-  (setq native-comp-async-report-warnings-errors nil  ; silence the noise
-        native-comp-deferred-compilation t            ; lazy compilation
-        native-comp-speed 3                           ; maximum optimization
-        native-comp-async-jobs (/ (num-processors) 2) ; half cores for async
-        native-comp-jit-compilation t))               ; JIT when possible
+  (setq native-comp-async-report-warnings-errors nil
+        native-comp-deferred-compilation t
+        native-comp-speed 3
+        native-comp-async-jobs (/ (num-processors) 2)
+        native-comp-jit-compilation t))
 
 ;; UI purification: remove the training wheels
 (setq-default inhibit-startup-screen t
@@ -67,13 +67,13 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; Suppression of frivolous warnings for the focused mind
-(setq warning-suppress-types '((comp)))
-
 ;; Load mini-echo
 (use-package mini-echo
   :ensure t
   :config
   (mini-echo-mode 1))
+
+;; Suppression of frivolous warnings for the focused mind
+(setq warning-suppress-types '((comp) (bytecomp)))
 
 ;;; early-init.el ends here
