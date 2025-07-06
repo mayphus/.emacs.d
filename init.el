@@ -131,6 +131,23 @@
   :custom
   (consult-buffer-filter '("\\` " "\\*copilot")))
 
+(use-package consult-notes
+  :ensure t
+  :bind (("C-c n c" . consult-notes)
+         ("C-c n a" . consult-notes-search-in-all-notes))
+  :custom
+  (consult-notes-file-dir-sources
+   `(("Notes" ?n "~/workspace/notes/")
+     ("Journal" ?j "~/workspace/notes/journal/")))
+  :config
+  ;; Disable org-headings-mode temporarily - this is the source of the cache error
+  ;; You can still use consult-notes for file-based note searching
+  ;; (consult-notes-org-headings-mode)
+  
+  ;; Initialize the cache
+  (when (fboundp 'consult-notes-cache-setup)
+    (consult-notes-cache-setup)))
+
 (use-package embark
   :ensure t
   :bind (("C-." . embark-act)
@@ -315,10 +332,25 @@
   (add-to-list 'copilot-major-mode-alist '("ts" . "typescript")))
 
 ;; Note-taking and Organization
+;; Global note search functions
+(defun my/consult-notes-find ()
+  "Find notes by filename."
+  (interactive)
+  (consult-find "~/workspace/notes/"))
+
+(defun my/consult-notes-search ()
+  "Search notes content."
+  (interactive)
+  (consult-ripgrep "~/workspace/notes/"))
+
+;; Note keymap with C-c n prefix
+(global-set-key (kbd "C-c n n") 'org-capture)
+(global-set-key (kbd "C-c n f") 'my/consult-notes-find)
+(global-set-key (kbd "C-c n s") 'my/consult-notes-search)
+
 (use-package org
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :bind ("C-c n" . org-capture)
   :custom
   (org-startup-indented t)
   (org-pretty-entities t)
@@ -340,6 +372,16 @@
                 (expand-file-name (concat slug ".org") "~/workspace/notes/"))))
       "#+title:      %(or org-capture-current-title \"\")\n#+date:       %U\n#+filetags:   %(my/org-capture-process-tags)\n\n%?")))
   :config
+  ;; Configure org-element cache for better performance
+  (setq org-element-use-cache t)
+  (setq org-element-cache-persistent t)
+  
+  ;; Add hook to ensure cache is active when org files are opened
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (when (fboundp 'org-element-cache-reset)
+                (org-element-cache-reset 'all))))
+  
   (defun my/org-capture-process-tags ()
     "Process tags input for org capture."
     (let* ((tags-input (read-string "Tags: "))
@@ -350,6 +392,21 @@
       (if tags
           (concat ":" (mapconcat 'identity tags ":") ":")
         ""))))
+
+;; Deft for note browsing
+(use-package deft
+  :ensure t
+  :defer t
+  :bind ("C-c n d" . deft)
+  :custom
+  (deft-directory "~/workspace/notes/")
+  (deft-recursive t)
+  (deft-extensions '("org" "txt" "md"))
+  (deft-default-extension "org")
+  (deft-text-mode 'org-mode)
+  (deft-use-filename-as-title t)
+  (deft-use-filter-string-for-filename t)
+  (deft-auto-save-interval 0))
 
 
 ;;; init.el ends here
