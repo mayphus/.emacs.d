@@ -220,6 +220,11 @@
   :defer t
   :bind ("C-c d" . dired-sidebar-toggle-sidebar))
 
+;; Dired with GNU ls
+(when (executable-find "gls")
+  (setq dired-listing-switches "-alFh --group-directories-first")
+  (setq insert-directory-program "gls"))
+
 ;; Web Browser
 (use-package xwidget
   :when (featurep 'xwidget-internal)
@@ -293,6 +298,8 @@
 
   :bind-keymap ("C-c c" . claude-code-command-map)
   :bind ("C-c C-t" . claude-code-toggle-sidebar)
+  :custom-face
+  (claude-code-repl-face ((t (:family "JuliaMono"))))
   :config
   (defun claude-code--directory-advice (orig-fun &rest args)
     "Advice to default to ~/.emacs.d when no project or file."

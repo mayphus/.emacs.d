@@ -70,6 +70,8 @@
 ;; Load mini-echo
 (use-package mini-echo
   :ensure t
+  :custom-face
+  (mini-echo-buffer-position ((t (:inherit unspecified))))
   :config
   (mini-echo-mode 1))
 
