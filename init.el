@@ -298,6 +298,7 @@
   (org-pretty-entities t)
   (org-hide-emphasis-markers t)
   (org-startup-with-inline-images t)
+  (org-agenda-files '("~/workspace/notes/"))
   (org-capture-templates
    '(("n" "Note" plain
       (file (lambda ()
