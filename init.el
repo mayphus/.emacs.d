@@ -244,6 +244,28 @@
   :defer t
   :config
   (claude-code-mode)
+  (defun claude-code-frame-at-default-size-p ()
+    "Return t if frame is at default size, nil otherwise."
+    (let ((default-width 80)
+          (default-height 35)
+          (current-width (frame-width))
+          (current-height (frame-height)))
+      (and (<= (abs (- current-width default-width)) 5)
+           (<= (abs (- current-height default-height)) 5))))
+
+  (defun claude-code-auto-display ()
+    "Auto-display Claude buffer only when frame is default size."
+    (when (claude-code-frame-at-default-size-p)
+      (delete-other-windows)
+      (switch-to-buffer (current-buffer))))
+
+  (advice-add 'display-buffer :after
+              (lambda (buffer &rest _)
+                (when (and (buffer-live-p buffer)
+                           (string-match-p "\\*claude.*\\*" (buffer-name buffer)))
+                  (with-current-buffer buffer
+                    (claude-code-auto-display)))))
+
   (defun claude-code-toggle-sidebar ()
     "Toggle Claude Code sidebar visibility."
     (interactive)
@@ -270,7 +292,16 @@
                                  (window-parameters . ((no-delete-other-windows . t))))))))))))
 
   :bind-keymap ("C-c c" . claude-code-command-map)
-  :bind ("C-c C-t" . claude-code-toggle-sidebar))
+  :bind ("C-c C-t" . claude-code-toggle-sidebar)
+  :config
+  (defun claude-code--directory-advice (orig-fun &rest args)
+    "Advice to default to ~/.emacs.d when no project or file."
+    (let ((result (apply orig-fun args)))
+      (if (string= result "~/")
+          user-emacs-directory
+        result)))
+  
+  (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
