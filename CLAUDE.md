@@ -33,7 +33,6 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **cape** - Completion at point extensions
 - **vterm** - Full terminal emulator
 - **eat** - Emulate A Terminal (eshell integration)
-- **denote** - Note-taking system for org files (bound to `C-c n`)
 - **org** - Enhanced org-mode with pretty entities and inline images
 - **markdown-mode** - Enhanced markdown editing
 - **modus-themes** - Light theme (modus-operandi)
@@ -47,7 +46,6 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - `C-c M-c` - Toggle Copilot mode
 - `C-c M-n/p` - Next/previous Copilot completion
 - `C-c M-f` - Accept Copilot completion by line
-- `C-c n` - Denote note-taking commands
 - `C-x g` - magit-status (git interface)
 - `C-s` - consult-line (enhanced search)
 - `C-x b` - consult-buffer (enhanced buffer switching)
@@ -109,33 +107,18 @@ The configuration includes claude-code.el for AI assistance with multi-project s
 - Fixed light theme (modus-operandi)
 - Emacs server auto-start for external connections
 
-### Note-Taking with Denote
-The configuration includes Denote for structured note-taking:
-- Default directory: `~/workspaces/org/`
-- Available keywords: emacs, programming, electronics, article, project, journal
-- Prompts for title and keywords, infers and sorts keywords
-- Journal template: "* Daily Notes\n\n** Tasks\n\n** Notes\n\n"
-- Key commands:
-  - `C-c n n` - denote (new note)
-  - `C-c n c` - denote-region (create note from region)
-  - `C-c n N` - denote-type
-  - `C-c n d` - denote-date
-  - `C-c n z` - denote-signature
-  - `C-c n s` - denote-subdirectory
-  - `C-c n t` - denote-template
-  - `C-c n i` - denote-link (insert link)
-  - `C-c n I` - denote-add-links
-  - `C-c n b` - denote-backlinks
-  - `C-c n f f` - denote-find-link
-  - `C-c n f b` - denote-find-backlink
-  - `C-c n r` - denote-rename-file
-  - `C-c n R` - denote-rename-file-using-front-matter
-  - `C-c n o` - denote-org-capture
 
 ### Org Mode Enhancements
 - Startup with indented view and inline images
 - Pretty entities display for UTF8 characters
 - Hidden emphasis markers for cleaner appearance
+
+#### Org Capture Integration
+- **Note Capture**: `C-c n` to capture notes with structured metadata
+- **Smart Tagging**: Handles comma/space-separated tags with automatic processing
+- **File Organization**: Saves to `~/workspace/notes/` with slugified filenames
+- **Template Structure**: Matches existing org files with title, date, and filetags
+- **Finalization**: Use `C-c C-c` to save, `C-c C-k` to abort capture
 
 ### AI Integration Features
 The configuration provides comprehensive AI support:
@@ -182,4 +165,4 @@ This configuration supports diverse development tasks:
 - **Automation Scripts**: Python, shell scripting with enhanced completion
 - **AI/ML Projects**: Jupyter integration, data science workflows
 - **Hardware Projects**: Microcontroller programming, PCB design documentation
-- **Documentation**: Org-mode for technical writing, Denote for knowledge management
+- **Documentation**: Org-mode for technical writing

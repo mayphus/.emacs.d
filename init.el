@@ -27,6 +27,9 @@
 (savehist-mode 1)
 (save-place-mode 1)
 
+;; Disable audible bell
+(setq ring-bell-function 'ignore)
+
 (setq auto-revert-verbose nil
       dired-auto-revert-buffer t
       warning-minimum-level :error
@@ -202,7 +205,6 @@
 
 ;; Dired with GNU ls
 (when (executable-find "gls")
-  (setq dired-listing-switches "-alFh --group-directories-first")
   (setq insert-directory-program "gls"))
 
 ;; Web Browser
@@ -315,41 +317,38 @@
 (use-package org
   :defer t
   :mode ("\\.org\\'" . org-mode)
+  :bind ("C-c n" . org-capture)
   :custom
   (org-startup-indented t)
   (org-pretty-entities t)
   (org-hide-emphasis-markers t)
-  (org-startup-with-inline-images t))
-
-(use-package denote
-  :ensure t
-  :defer t
-  :custom
-  (denote-directory (expand-file-name "~/workspaces/org/"))
-  (denote-known-keywords '("emacs" "programming" "electronics" "article" "project" "journal"))
-  (denote-infer-keywords t)
-  (denote-sort-keywords t)
-  (denote-file-type nil)
-  (denote-prompts '(title keywords))
-  :bind (("C-c n n" . denote)
-         ("C-c n c" . denote-region)
-         ("C-c n N" . denote-type)
-         ("C-c n d" . denote-date)
-         ("C-c n z" . denote-signature)
-         ("C-c n s" . denote-subdirectory)
-         ("C-c n t" . denote-template)
-         ("C-c n i" . denote-link)
-         ("C-c n I" . denote-add-links)
-         ("C-c n b" . denote-backlinks)
-         ("C-c n f f" . denote-find-link)
-         ("C-c n f b" . denote-find-backlink)
-         ("C-c n r" . denote-rename-file)
-         ("C-c n R" . denote-rename-file-using-front-matter)
-         ("C-c n o" . denote-org-capture))
+  (org-startup-with-inline-images t)
+  (org-capture-templates
+   '(("n" "Note" plain
+      (file (lambda ()
+              (let* ((title (read-string "Title: "))
+                     (slug (downcase
+                            (replace-regexp-in-string
+                             "[^a-z0-9]+" "-"
+                             (replace-regexp-in-string
+                              "^-\\|-$" ""
+                              (replace-regexp-in-string
+                               "[^[:alnum:][:space:]]" ""
+                               title))))))
+                (setq org-capture-current-title title)
+                (expand-file-name (concat slug ".org") "~/workspace/notes/"))))
+      "#+title:      %(or org-capture-current-title \"\")\n#+date:       %U\n#+filetags:   %(my/org-capture-process-tags)\n\n%?")))
   :config
-  (denote-fontify-links-mode-maybe)
-  (setq denote-dired-directories (list denote-directory))
-  (add-hook 'dired-mode-hook #'denote-dired-mode)
-  (setq denote-templates '((journal . "* Daily Notes\n\n** Tasks\n\n** Notes\n\n"))))
+  (defun my/org-capture-process-tags ()
+    "Process tags input for org capture."
+    (let* ((tags-input (read-string "Tags: "))
+           (tags (when (not (string-empty-p tags-input))
+                   (mapcar (lambda (tag)
+                             (downcase (string-trim tag)))
+                           (split-string tags-input "[, ]+" t)))))
+      (if tags
+          (concat ":" (mapconcat 'identity tags ":") ":")
+        ""))))
+
 
 ;;; init.el ends here

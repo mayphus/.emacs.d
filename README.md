@@ -26,8 +26,8 @@ A clean, minimal Emacs configuration focused on enhanced completion, AI assistan
 - **Eat** - Emulate A Terminal with eshell integration
 
 ### Note-Taking & Organization
-- **Denote** - Structured note-taking system with linking and backlinks
 - **Org Mode** - Enhanced with pretty entities, inline images, and clean startup
+- **Org Capture** - Quick note capture with structured metadata and smart tagging
 
 ### Smart Features
 - Fixed light theme (modus-operandi) for consistent appearance
@@ -56,9 +56,7 @@ A clean, minimal Emacs configuration focused on enhanced completion, AI assistan
 - `C-c M-f` - Accept Copilot completion by line
 
 ### Note-Taking
-- `C-c n n` - Create new note
-- `C-c n i` - Insert link to note
-- `C-c n b` - Show backlinks
+- `C-c n` - Capture new note with metadata
 
 ### Utilities
 - `C-s-f` - Toggle fullscreen
@@ -74,7 +72,7 @@ A clean, minimal Emacs configuration focused on enhanced completion, AI assistan
    # Add any needed API keys for AI services
    ```
 4. Install language servers for LSP support as needed
-5. Ensure `~/workspaces/org/` directory exists for note-taking
+5. Ensure `~/workspace/notes/` directory exists for note-taking
 
 ## Directory Structure
 
@@ -113,13 +111,13 @@ rustup component add rust-analyzer
 
 ## Notes Directory
 
-The configuration expects notes in `~/workspaces/org/` for Denote integration. Create this directory or adjust the path in `init.el`.
+The configuration saves captured notes to `~/workspace/notes/`. Create this directory or adjust the path in the org-capture template in `init.el`.
 
 ## Customization
 
 ### Key Configuration Points
 - **Theme**: Fixed modus-operandi theme in `early-init.el`
-- **Note Keywords**: Update `denote-known-keywords` in `init.el`
+- **Note Directory**: Update org-capture template path in `init.el`
 - **LSP Languages**: Add to `eglot` hook in `init.el`
 - **Backup Locations**: Adjust paths in `early-init.el`
 
