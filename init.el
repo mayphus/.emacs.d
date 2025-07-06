@@ -51,13 +51,6 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Scrolling
-(setq scroll-step 1
-      scroll-margin 3
-      scroll-conservatively 100000
-      auto-window-vscroll nil
-      fast-but-imprecise-scrolling t
-      scroll-preserve-screen-position t)
-
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode 1))
 
@@ -216,11 +209,6 @@
   :config
   (setq eat-enable-mouse t))
 
-;; File Management
-(use-package dired-sidebar
-  :ensure t
-  :defer t
-  :bind ("C-c d" . dired-sidebar-toggle-sidebar))
 
 ;; Dired with GNU ls
 (when (executable-find "gls")
@@ -248,57 +236,8 @@
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :defer t
-  :config
-  (claude-code-mode)
-  (defun claude-code-frame-at-default-size-p ()
-    "Return t if frame is at default size, nil otherwise."
-    (let ((default-width 80)
-          (default-height 35)
-          (current-width (frame-width))
-          (current-height (frame-height)))
-      (and (<= (abs (- current-width default-width)) 5)
-           (<= (abs (- current-height default-height)) 5))))
-
-  (defun claude-code-auto-display ()
-    "Auto-display Claude buffer only when frame is default size."
-    (when (claude-code-frame-at-default-size-p)
-      (delete-other-windows)
-      (switch-to-buffer (current-buffer))))
-
-  (advice-add 'display-buffer :after
-              (lambda (buffer &rest _)
-                (when (and (buffer-live-p buffer)
-                           (string-match-p "\\*claude.*\\*" (buffer-name buffer)))
-                  (with-current-buffer buffer
-                    (claude-code-auto-display)))))
-
-  (defun claude-code-toggle-sidebar ()
-    "Toggle Claude Code sidebar visibility."
-    (interactive)
-    (let ((claude-window (get-buffer-window (current-buffer))))
-      (if (and claude-window (string-match-p "\\*claude.*\\*" (buffer-name)))
-          (if (window-parameter claude-window 'window-side)
-              (delete-window claude-window)
-            (display-buffer (current-buffer)
-                           '((display-buffer-in-side-window)
-                             (side . right)
-                             (window-width . 0.33)
-                             (window-parameters . ((no-delete-other-windows . t))))))
-        (let ((claude-buf (seq-find (lambda (buf)
-                                     (string-match-p "\\*claude.*\\*" (buffer-name buf)))
-                                   (buffer-list))))
-          (when claude-buf
-            (let ((existing-window (get-buffer-window claude-buf)))
-              (if existing-window
-                  (delete-window existing-window)
-                (display-buffer claude-buf
-                               '((display-buffer-in-side-window)
-                                 (side . right)
-                                 (window-width . 0.33)
-                                 (window-parameters . ((no-delete-other-windows . t))))))))))))
-
+  :config (claude-code-mode)
   :bind-keymap ("C-c c" . claude-code-command-map)
-  :bind ("C-c C-t" . claude-code-toggle-sidebar)
   :custom-face
   (claude-code-repl-face ((t (:family "JuliaMono"))))
   :config
@@ -328,9 +267,8 @@
   (copilot-max-char -1)
   (copilot-indent-offset-warning-disable t)
   :config
-  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp"))
-  (add-to-list 'copilot-major-mode-alist '("js" . "javascript"))
-  (add-to-list 'copilot-major-mode-alist '("ts" . "typescript")))
+  ;; Most mode mappings are automatic, only add if needed
+  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
 
 ;; Note-taking and Organization
 ;; Create a proper keymap for notes
