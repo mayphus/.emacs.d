@@ -84,7 +84,7 @@
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'leuven t)
+              (load-theme 'tsdh-light t)
               (let ((bg (face-background 'default)))
                 (when (and bg (not (string= bg "unspecified-bg")))
                   (set-face-background 'fringe bg)))
@@ -92,7 +92,7 @@
               (when (executable-find "claude")
                 (shell-command "claude config set -g theme light" nil nil)))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'leuven-dark t)
+             (load-theme 'tsdh-dark t)
              (let ((bg (face-background 'default)))
                (when (and bg (not (string= bg "unspecified-bg")))
                  (set-face-background 'fringe bg)))

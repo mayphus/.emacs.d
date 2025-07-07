@@ -34,7 +34,6 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **vterm** - Full terminal emulator
 - **eat** - Emulate A Terminal (eshell integration)
 - **org** - Enhanced org-mode with pretty entities and inline images
-- **markdown-mode** - Enhanced markdown editing
 - **modus-themes** - Light theme (modus-operandi)
 - **exec-path-from-shell** - Environment variable importing
 

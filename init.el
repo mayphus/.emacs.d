@@ -31,6 +31,7 @@
 ;; Disable audible bell
 (setq ring-bell-function 'ignore)
 
+;; UI and messaging settings
 (setq auto-revert-verbose nil
       dired-auto-revert-buffer t
       warning-minimum-level :error
@@ -189,13 +190,6 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :mode ("\\.md\\'" . markdown-mode)
-  :custom
-  (markdown-fontify-code-blocks-natively t))
-
 ;; Terminal
 (use-package vterm
   :ensure t
@@ -216,11 +210,11 @@
          ("C-p" . eshell-previous-input)
          ("C-n" . eshell-next-input)))
 
-;; Dired with GNU ls
+;; Dired
 (when (executable-find "gls")
   (setq insert-directory-program "gls"))
 
-;; Web Browser
+;; Web
 (use-package xwidget
   :when (featurep 'xwidget-internal)
   :defer t
@@ -237,7 +231,7 @@
   :custom
   (xwidget-webkit-enable-plugins t))
 
-;; AI Assistance
+;; AI
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
@@ -348,6 +342,5 @@
   (deft-strip-summary-regexp "\\(\\*+\\|#+\\w+:.*\\)")
   ;; Ignore dot files, hidden files, CLAUDE.md, and README.org files
   (deft-ignore-file-regexp "\\(?:\\.\\|#\\|~\\|CLAUDE\\.md\\|README\\.org\\)"))
-
 
 ;;; init.el ends here
