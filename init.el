@@ -72,6 +72,9 @@
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-c e") 'eshell)
 
+;; Start in fullscreen mode
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 ;; Server
 (require 'server)
 (unless (server-running-p)
@@ -299,12 +302,12 @@
   :config
   (defun my/claude-code-ide-default-to-emacs-config (orig-fun &rest args)
     "Use Emacs config folder when not in a project."
-    (let ((default-directory 
+    (let ((default-directory
            (or (when-let ((project (project-current)))
                  (project-root project))
                user-emacs-directory)))
       (apply orig-fun args)))
-  
+
   (advice-add 'claude-code-ide :around #'my/claude-code-ide-default-to-emacs-config))
 
 (use-package copilot
