@@ -152,6 +152,8 @@
 
 (use-package embark-consult
   :ensure t
+  :after (embark consult)
+  :demand t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package corfu
@@ -209,10 +211,12 @@
 
 (use-package eshell
   :defer t
-  :bind (:map eshell-mode-map
-         ("C-r" . consult-history)
-         ("C-p" . eshell-previous-input)
-         ("C-n" . eshell-next-input)))
+  :init
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (define-key eshell-mode-map (kbd "C-r") 'consult-history)
+              (define-key eshell-mode-map (kbd "C-p") 'eshell-previous-input)
+              (define-key eshell-mode-map (kbd "C-n") 'eshell-next-input))))
 
 ;; Dired
 (when (executable-find "gls")
@@ -237,23 +241,17 @@
 
 ;; AI
 
-(use-package claude-code
+(use-package claude-code-ide
   :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :defer t
-  :config (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map)
-  :custom-face
-  (claude-code-repl-face ((t (:family "JuliaMono"))))
-  :config
-  (defun claude-code--directory-advice (orig-fun &rest args)
-    "Advice to default to ~/.emacs.d when no project or file."
-    (let ((result (apply orig-fun args)))
-      (if (string= result "~/")
-          user-emacs-directory
-        result)))
-
-  (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
+  :commands (claude-code-ide claude-code-ide-resume claude-code-ide-stop claude-code-ide-list-sessions)
+  :bind (("C-c i i" . claude-code-ide)
+         ("C-c i r" . claude-code-ide-resume)
+         ("C-c i s" . claude-code-ide-stop)
+         ("C-c i l" . claude-code-ide-list-sessions))
+  :custom
+  (claude-code-ide-window-side nil))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
