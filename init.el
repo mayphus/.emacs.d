@@ -74,6 +74,7 @@
     (exec-path-from-shell-initialize)))
 
 ;; Version Control
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
@@ -90,6 +91,7 @@
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
 ;; Completion System
+
 (use-package vertico
   :ensure t
   :init (vertico-mode)
@@ -177,7 +179,8 @@
   :ensure t
   :init (which-key-mode))
 
-;; Development Tools
+;; Development
+
 (use-package eglot
   :ensure t
   :defer t
@@ -191,6 +194,7 @@
   (global-treesit-auto-mode))
 
 ;; Terminal
+
 (use-package vterm
   :ensure t
   :defer t
@@ -232,12 +236,13 @@
   (xwidget-webkit-enable-plugins t))
 
 ;; AI
+
 (use-package claude-code
   :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :defer t
   :config (claude-code-mode)
-  :bind-keymap ("C-c a" . claude-code-command-map)
+  :bind-keymap ("C-c c" . claude-code-command-map)
   :custom-face
   (claude-code-repl-face ((t (:family "JuliaMono"))))
   :config
