@@ -58,11 +58,6 @@
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir t)))
 
-;; Package system: the gateway to infinite possibilities
-(setq package-enable-at-startup nil
-      package-quickstart t
-      package-native-compile t)
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu-elpa" . "https://elpa.gnu.org/packages/") t)
