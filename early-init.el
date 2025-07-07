@@ -50,6 +50,9 @@
 (setq read-process-output-max (* 1024 1024)  ; 1MB
       process-adaptive-read-buffering nil)
 
+;; Suppression of frivolous warnings for the focused mind
+(setq warning-suppress-types '((comp) (bytecomp)))
+
 ;; Load path enhancement: prepare for custom elisp greatness
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
@@ -66,8 +69,7 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; Suppression of frivolous warnings for the focused mind
-(setq warning-suppress-types '((comp) (bytecomp)))
+(use-package standard-themes :ensure t)
 
 ;; Theme Management
 (defun my/apple-theme (appearance)
@@ -75,21 +77,21 @@
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'tsdh-light t)
+              (load-theme 'standard-light t)
               (let ((bg (face-background 'default)))
                 (when (and bg (not (string= bg "unspecified-bg")))
                   (set-face-background 'fringe bg)))
               ;; Set Claude CLI theme to light
               (when (executable-find "claude")
-                (shell-command "claude config set -g theme light" nil nil)))
+                (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'tsdh-dark t)
+             (load-theme 'standard-dark t)
              (let ((bg (face-background 'default)))
                (when (and bg (not (string= bg "unspecified-bg")))
                  (set-face-background 'fringe bg)))
              ;; Set Claude CLI theme to dark
              (when (executable-find "claude")
-               (shell-command "claude config set -g theme dark" nil nil))))))
+               (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))

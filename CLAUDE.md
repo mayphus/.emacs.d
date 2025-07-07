@@ -33,7 +33,7 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **vterm** - Full terminal emulator
 - **eat** - Emulate A Terminal (eshell integration)
 - **org** - Enhanced org-mode with pretty entities and inline images
-- **modus-themes** - Light theme (modus-operandi)
+- **standard-themes** - Dynamic light/dark theme (standard-light/standard-dark)
 - **exec-path-from-shell** - Environment variable importing
 
 ### Key Bindings Structure
@@ -102,7 +102,7 @@ The configuration includes claude-code.el for AI assistance with multi-project s
 - Save-place mode for cursor position memory
 - Treesitter auto-mode for enhanced syntax highlighting
 - LSP support via Eglot for Python, JS, TS, Go, Rust
-- Fixed light theme (modus-operandi)
+- Dynamic light/dark theme (standard-themes) that follows macOS system appearance
 - Emacs server auto-start for external connections
 
 
