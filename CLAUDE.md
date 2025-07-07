@@ -29,7 +29,6 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **claude-code** - Integration with Claude Code CLI (bound to `C-c c`)
 - **copilot** - GitHub Copilot integration with tab completion
 - **diff-hl** - Git diff highlighting in buffers
-- **mini-echo** - Minimal echo area enhancements
 - **cape** - Completion at point extensions
 - **vterm** - Full terminal emulator
 - **eat** - Emulate A Terminal (eshell integration)

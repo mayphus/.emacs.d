@@ -67,14 +67,6 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; Load mini-echo
-(use-package mini-echo
-  :ensure t
-  :custom-face
-  (mini-echo-buffer-position ((t (:inherit unspecified))))
-  :config
-  (mini-echo-mode 1))
-
 ;; Suppression of frivolous warnings for the focused mind
 (setq warning-suppress-types '((comp) (bytecomp)))
 
