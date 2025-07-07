@@ -19,7 +19,20 @@
       (make-directory dir t)))
   (setq backup-directory-alist `((".*" . ,backup-dir))
         auto-save-file-name-transforms `((".*" ,auto-save-dir t))
-        auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir)))
+        auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir))
+
+  ;; Backup retention: keep only last 30 days
+  (defun my/cleanup-old-backups ()
+    "Remove backup files older than 30 days."
+    (let ((cutoff-time (- (float-time) (* 30 24 60 60))))
+      (dolist (dir (list backup-dir auto-save-dir))
+        (when (file-directory-p dir)
+          (dolist (file (directory-files dir t "^[^.]"))
+            (when (and (file-regular-p file)
+                       (< (float-time (nth 5 (file-attributes file))) cutoff-time))
+              (delete-file file)))))))
+
+  (run-with-timer 3600 3600 'my/cleanup-old-backups))
 
 ;; Basic Behavior
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -63,6 +76,37 @@
 (require 'server)
 (unless (server-running-p)
   (server-start))
+
+;; Theme
+(use-package standard-themes
+  :ensure t
+  :config
+  (defun my/apple-theme (appearance)
+    "Set ns-appearance and theme based on system APPEARANCE."
+    (when (eq system-type 'darwin)
+      (pcase appearance
+        ('light (set-frame-parameter nil 'ns-appearance 'light)
+                (load-theme 'standard-light t)
+                (let ((bg (face-background 'default)))
+                  (when (and bg (not (string= bg "unspecified-bg")))
+                    (set-face-background 'fringe bg)))
+                (when (executable-find "claude")
+                  (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
+        ('dark (set-frame-parameter nil 'ns-appearance 'dark)
+               (load-theme 'standard-dark t)
+               (let ((bg (face-background 'default)))
+                 (when (and bg (not (string= bg "unspecified-bg")))
+                   (set-face-background 'fringe bg)))
+               (when (executable-find "claude")
+                 (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
+
+  (when (and (eq system-type 'darwin)
+             (boundp 'ns-system-appearance-change-functions))
+    (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
+
+  ;; Set initial theme based on system appearance
+  (when (eq system-type 'darwin)
+    (my/apple-theme (if (string-match-p "Dark" (or (getenv "APPEARANCE") "")) 'dark 'light))))
 
 ;; Environment Variables
 (use-package exec-path-from-shell
@@ -249,9 +293,19 @@
   :bind (("C-c i i" . claude-code-ide)
          ("C-c i r" . claude-code-ide-resume)
          ("C-c i s" . claude-code-ide-stop)
-         ("C-c i l" . claude-code-ide-list-sessions))
-  :custom
-  (claude-code-ide-window-side nil))
+         ("C-c i l" . claude-code-ide-list-sessions)
+         :map vterm-mode-map
+         ("M-<return>" . claude-code-ide-insert-newline))
+  :config
+  (defun my/claude-code-ide-default-to-emacs-config (orig-fun &rest args)
+    "Use Emacs config folder when not in a project."
+    (let ((default-directory 
+           (or (when-let ((project (project-current)))
+                 (project-root project))
+               user-emacs-directory)))
+      (apply orig-fun args)))
+  
+  (advice-add 'claude-code-ide :around #'my/claude-code-ide-default-to-emacs-config))
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)

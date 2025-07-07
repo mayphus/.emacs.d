@@ -14,7 +14,7 @@
 ;; Restore sanity after initialization
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold 16777216  ; 16MB
+            (setq gc-cons-threshold 104857600  ; 100MB
                   gc-cons-percentage 0.1)))
 
 ;; Native compilation: embrace the machine
@@ -23,7 +23,7 @@
   (setq native-comp-async-report-warnings-errors nil
         native-comp-deferred-compilation t
         native-comp-speed 3
-        native-comp-async-jobs (/ (num-processors) 2)
+        native-comp-async-jobs (num-processors)
         native-comp-jit-compilation t))
 
 ;; UI purification: remove the training wheels
@@ -58,38 +58,11 @@
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir t)))
 
+(setq package-enable-at-startup nil)
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu-elpa" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
-
-(use-package standard-themes :ensure t)
-
-;; Theme Management
-(defun my/apple-theme (appearance)
-  "Set ns-appearance and modus theme based on system APPEARANCE."
-  (when (eq system-type 'darwin)
-    (pcase appearance
-      ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'standard-light t)
-              (let ((bg (face-background 'default)))
-                (when (and bg (not (string= bg "unspecified-bg")))
-                  (set-face-background 'fringe bg)))
-              ;; Set Claude CLI theme to light
-              (when (executable-find "claude")
-                (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
-      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'standard-dark t)
-             (let ((bg (face-background 'default)))
-               (when (and bg (not (string= bg "unspecified-bg")))
-                 (set-face-background 'fringe bg)))
-             ;; Set Claude CLI theme to dark
-             (when (executable-find "claude")
-               (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
-
-(when (and (eq system-type 'darwin)
-           (boundp 'ns-system-appearance-change-functions))
-  (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
 
 ;;; early-init.el ends here
