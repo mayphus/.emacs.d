@@ -77,36 +77,31 @@
 (unless (server-running-p)
   (server-start))
 
-;; Theme
-(use-package standard-themes
-  :ensure t
-  :config
-  (defun my/apple-theme (appearance)
-    "Set ns-appearance and theme based on system APPEARANCE."
-    (when (eq system-type 'darwin)
-      (pcase appearance
-        ('light (set-frame-parameter nil 'ns-appearance 'light)
-                (load-theme 'standard-light t)
-                (let ((bg (face-background 'default)))
-                  (when (and bg (not (string= bg "unspecified-bg")))
-                    (set-face-background 'fringe bg)))
-                (when (executable-find "claude")
-                  (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
-        ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-               (load-theme 'standard-dark t)
-               (let ((bg (face-background 'default)))
-                 (when (and bg (not (string= bg "unspecified-bg")))
-                   (set-face-background 'fringe bg)))
-               (when (executable-find "claude")
-                 (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
-
-  (when (and (eq system-type 'darwin)
-             (boundp 'ns-system-appearance-change-functions))
-    (add-hook 'ns-system-appearance-change-functions #'my/apple-theme))
-
-  ;; Set initial theme based on system appearance
+;; Appearance
+(defun my/handle-appearance-change (appearance)
+  "Set ns-appearance and theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
-    (my/apple-theme (if (string-match-p "Dark" (or (getenv "APPEARANCE") "")) 'dark 'light))))
+    (pcase appearance
+      ('light (set-frame-parameter nil 'ns-appearance 'light)
+              (let ((bg (face-background 'default)))
+                (when (and bg (not (string= bg "unspecified-bg")))
+                  (set-face-background 'fringe bg)))
+              (when (executable-find "claude")
+                (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
+      ('dark (set-frame-parameter nil 'ns-appearance 'light) ; Set to light also because no theme is used
+             (let ((bg (face-background 'default)))
+               (when (and bg (not (string= bg "unspecified-bg")))
+                 (set-face-background 'fringe bg)))
+             (when (executable-find "claude")
+               (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
+
+(when (and (eq system-type 'darwin)
+           (boundp 'ns-system-appearance-change-functions))
+  (add-hook 'ns-system-appearance-change-functions #'my/handle-appearance-change))
+
+;; Set initial theme based on system appearance
+(when (eq system-type 'darwin)
+  (my/handle-appearance-change (if (string-match-p "Dark" (or (getenv "APPEARANCE") "")) 'dark 'light)))
 
 ;; Environment Variables
 (use-package exec-path-from-shell
@@ -309,7 +304,7 @@
       (if (string= result "~/")
           user-emacs-directory
         result)))
-  
+
   (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package claude-code-ide
