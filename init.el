@@ -83,12 +83,14 @@
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
+              (load-theme 'tango)
               (let ((bg (face-background 'default)))
                 (when (and bg (not (string= bg "unspecified-bg")))
                   (set-face-background 'fringe bg)))
               (when (executable-find "claude")
                 (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
-      ('dark (set-frame-parameter nil 'ns-appearance 'light) ; Set to light also because no theme is used
+      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
+             (load-theme 'tango-dark)
              (let ((bg (face-background 'default)))
                (when (and bg (not (string= bg "unspecified-bg")))
                  (set-face-background 'fringe bg)))
