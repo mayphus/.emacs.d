@@ -72,9 +72,6 @@
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-c e") 'eshell)
 
-;; Start in fullscreen mode
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 ;; Server
 (require 'server)
 (unless (server-running-p)
@@ -170,9 +167,7 @@
          ("M-g o" . consult-outline)
          ("M-s d" . consult-find)
          ("M-s g" . consult-grep)
-         ("M-s r" . consult-ripgrep))
-  :custom
-  (consult-buffer-filter '("\\` " "\\*copilot")))
+         ("M-s r" . consult-ripgrep)))
 
 (use-package consult-notes
   :ensure t
@@ -229,6 +224,17 @@
   :init (which-key-mode))
 
 ;; Development
+
+(use-package flymake
+  :hook (prog-mode . flymake-mode)
+  :bind (:map flymake-mode-map
+              ("M-n" . flymake-goto-next-error)
+              ("M-p" . flymake-goto-prev-error)))
+
+(use-package dap-mode
+  :ensure t
+  :defer t
+  :bind ("C-c d" . dap-debug))
 
 (use-package eglot
   :ensure t
@@ -287,6 +293,22 @@
   (xwidget-webkit-enable-plugins t))
 
 ;; AI
+
+(use-package claude-code
+  :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :defer t
+  :config (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :custom-face
+  (claude-code-repl-face ((t (:family "JuliaMono"))))
+  :config
+  (defun claude-code--directory-advice (orig-fun &rest args)
+    "Advice to default to ~/.emacs.d when no project or file."
+    (let ((result (apply orig-fun args)))
+      (if (string= result "~/")
+          user-emacs-directory
+        result))))
 
 (use-package claude-code-ide
   :ensure t
