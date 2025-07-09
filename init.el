@@ -391,7 +391,7 @@
                                title))))))
                 (setq org-capture-current-title title)
                 (expand-file-name (concat slug ".org") "~/workspace/notes/"))))
-      "#+title:      %(or org-capture-current-title \"\")\n#+date:       %U\n#+filetags:   %(my/org-capture-process-tags)\n\n%?")))
+      "#+title:      %(or org-capture-current-title \"\")\n#+filetags:   %(my/org-capture-process-tags)\n\n%?")))
   :config
   ;; Configure org-element cache for better performance
   (setq org-element-use-cache t)
