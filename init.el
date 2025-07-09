@@ -308,7 +308,9 @@
     (let ((result (apply orig-fun args)))
       (if (string= result "~/")
           user-emacs-directory
-        result))))
+        result)))
+  
+  (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package claude-code-ide
   :ensure t
