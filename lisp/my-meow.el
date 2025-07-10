@@ -7,33 +7,18 @@
 
 ;;; Code:
 
-;; Define toggle function first
-(defun my/toggle-meow-mode ()
-  "Toggle meow mode for current buffer or globally."
-  (interactive)
-  (if (bound-and-true-p meow-mode)
-      (progn
-        (meow-mode -1)
-        (message "Meow mode disabled in current buffer"))
-    (progn
-      (meow-mode 1)
-      (message "Meow mode enabled in current buffer"))))
-
 (use-package meow
   :ensure t
   :demand t
-  :bind (("C-c m" . my/toggle-meow-mode)
-         ("C-c M-m" . meow-tutor))
+  :bind ("C-c m" . my/toggle-meow-mode)
   :custom
-  (meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (meow-use-cursor-position-hack t)
   (meow-use-clipboard t)
   :config
 
   ;; Basic meow setup
   (defun meow-setup ()
     "Setup meow keybindings."
-    
+
     ;; Motion keys (single character movements)
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
@@ -41,7 +26,7 @@
      '("h" . meow-left)
      '("l" . meow-right)
      '("<escape>" . ignore))
-    
+
     ;; Leader key bindings (SPC prefix)
     (meow-leader-define-key
      ;; Use SPC (0-9) for digit arguments
@@ -57,7 +42,7 @@
      '("0" . meow-digit-argument)
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet))
-    
+
     ;; Normal state bindings
     (meow-normal-define-key
      '("0" . meow-expand-0)
@@ -124,7 +109,7 @@
 
   ;; Run setup
   (meow-setup)
-  
+
   ;; Enable meow only for normal editing buffers
   (add-hook 'text-mode-hook 'meow-mode)
   (add-hook 'prog-mode-hook 'meow-mode)
