@@ -55,6 +55,9 @@ eln-cache/
 *.tmp
 *.temp
 
+# Compiled Emacs Lisp files
+*.elc
+
 # Package quickstart files
 package-quickstart.el
 package-quickstart.elc
