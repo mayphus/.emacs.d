@@ -293,6 +293,9 @@
   :custom
   (xwidget-webkit-enable-plugins t))
 
+;; Modal Editing
+(require 'my-meow)
+
 ;; AI
 
 (use-package claude-code
