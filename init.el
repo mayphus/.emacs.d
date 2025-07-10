@@ -338,6 +338,9 @@
   (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package claude-code-ide
+  "claude code IDE integration for Emacs.
+different from claude-code.el, this package provides a more IDE-like experience,
+which just like claude code inside vscode experience."
   :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :defer t
@@ -352,7 +355,7 @@
   (defun my/claude-code-ide-default-to-emacs-config (orig-fun &rest args)
     "Use Emacs config folder when not in a project."
     (let ((default-directory
-           (or (when-let ((project (project-current)))
+           (or (when-let* ((project (project-current)))
                  (project-root project))
                user-emacs-directory)))
       (apply orig-fun args)))
