@@ -294,7 +294,7 @@
   (xwidget-webkit-enable-plugins t))
 
 ;; Modal Editing
-(require 'my-meow)
+(use-package my-meow)
 
 ;; AI
 
