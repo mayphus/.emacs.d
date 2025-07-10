@@ -82,24 +82,23 @@
   :ensure t
   :defer t)
 
+(defmacro my/set-appearance-theme (appearance theme-name)
+  "Set macOS APPEARANCE, THEME-NAME, fringe mode face and sync Claude theme."
+  `(progn
+     (set-frame-parameter nil 'ns-appearance ',appearance)
+     (load-theme ',theme-name t)
+     (let ((bg (face-background 'default)))
+       (when (and bg (not (string= bg "unspecified-bg")))
+         (set-face-background 'fringe bg)))
+     (when (executable-find "claude")
+       (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" ,(symbol-name appearance)))))
+
 (defun my/handle-appearance-change (appearance)
   "Set ns-appearance and theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
     (pcase appearance
-      ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'standard-light t)
-              (let ((bg (face-background 'default)))
-                (when (and bg (not (string= bg "unspecified-bg")))
-                  (set-face-background 'fringe bg)))
-              (when (executable-find "claude")
-                (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
-      ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'standard-dark t)
-             (let ((bg (face-background 'default)))
-               (when (and bg (not (string= bg "unspecified-bg")))
-                 (set-face-background 'fringe bg)))
-             (when (executable-find "claude")
-               (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "dark"))))))
+      ('light (my/set-appearance-theme light standard-light))
+      ('dark (my/set-appearance-theme dark standard-dark)))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))
