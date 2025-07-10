@@ -223,6 +223,10 @@
   :ensure t
   :init (which-key-mode))
 
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+
 ;; Development
 
 (use-package flymake
