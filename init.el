@@ -78,19 +78,23 @@
   (server-start))
 
 ;; Appearance
+(use-package standard-themes
+  :ensure t
+  :defer t)
+
 (defun my/handle-appearance-change (appearance)
   "Set ns-appearance and theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
     (pcase appearance
       ('light (set-frame-parameter nil 'ns-appearance 'light)
-              (load-theme 'tango)
+              (load-theme 'standard-light t)
               (let ((bg (face-background 'default)))
                 (when (and bg (not (string= bg "unspecified-bg")))
                   (set-face-background 'fringe bg)))
               (when (executable-find "claude")
                 (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" "light")))
       ('dark (set-frame-parameter nil 'ns-appearance 'dark)
-             (load-theme 'tango-dark)
+             (load-theme 'standard-dark t)
              (let ((bg (face-background 'default)))
                (when (and bg (not (string= bg "unspecified-bg")))
                  (set-face-background 'fringe bg)))
