@@ -19,20 +19,7 @@
       (make-directory dir t)))
   (setq backup-directory-alist `((".*" . ,backup-dir))
         auto-save-file-name-transforms `((".*" ,auto-save-dir t))
-        auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir))
-
-  ;; Backup retention: keep only last 30 days
-  (defun my/cleanup-old-backups ()
-    "Remove backup files older than 30 days."
-    (let ((cutoff-time (- (float-time) (* 30 24 60 60))))
-      (dolist (dir (list backup-dir auto-save-dir))
-        (when (file-directory-p dir)
-          (dolist (file (directory-files dir t "^[^.]"))
-            (when (and (file-regular-p file)
-                       (< (float-time (nth 5 (file-attributes file))) cutoff-time))
-              (delete-file file)))))))
-
-  (run-with-timer 3600 3600 'my/cleanup-old-backups))
+        auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir)))
 
 ;; Basic Behavior
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -83,13 +70,13 @@
   :defer t)
 
 (defmacro my/set-appearance-theme (appearance theme-name)
-  "Set macOS APPEARANCE, THEME-NAME, fringe mode face and sync Claude theme."
+  "Set macOS APPEARANCE, THEME-NAME, and sync Claude theme."
   `(progn
      (set-frame-parameter nil 'ns-appearance ',appearance)
      (load-theme ',theme-name t)
-     (let ((bg (face-background 'default)))
-       (when (and bg (not (string= bg "unspecified-bg")))
-         (set-face-background 'fringe bg)))
+     ;; (let ((bg (face-background 'default)))
+     ;;   (when (and bg (not (string= bg "unspecified-bg")))
+     ;;     (set-face-background 'fringe bg)))
      (when (executable-find "claude")
        (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" ,(symbol-name appearance)))))
 
