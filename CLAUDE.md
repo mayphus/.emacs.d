@@ -27,6 +27,8 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
 - **eglot** - LSP support for Python, JS, TS, Go, Rust
 - **which-key** - Key binding discovery (0.3s delay)
 - **claude-code** - Integration with Claude Code CLI (bound to `C-c c`)
+- **gptel** - ChatGPT/Claude integration for inline AI assistance (bound to `C-c g`)
+- **org-ai** - AI integration specifically for org-mode buffers
 - **copilot** - GitHub Copilot integration with tab completion
 - **diff-hl** - Git diff highlighting in buffers
 - **cape** - Completion at point extensions
@@ -41,6 +43,8 @@ Uses built-in `use-package` with `:ensure t` for automatic package installation.
   - `C-c c p` - Switch between Claude project sessions
   - `C-c c P` - List all active Claude project sessions
   - `C-u C-c c k` - Kill specific project's Claude session
+- `C-c g` - gptel (inline AI chat)
+- `C-c G` - gptel-menu (AI configuration menu)
 - `C-c M-c` - Toggle Copilot mode
 - `C-c M-n/p` - Next/previous Copilot completion
 - `C-c M-f` - Accept Copilot completion by line
@@ -140,6 +144,18 @@ Key Commands:
 - Project and directory-specific sessions
 - Context-aware command sending
 - Transient menu interface for all features
+
+#### gptel Integration
+- Direct AI chat integration within Emacs
+- Supports multiple AI providers (Claude, GPT, etc.)
+- Inline AI assistance in any buffer
+- Configurable via `C-c G` menu
+
+#### org-ai Integration
+- AI assistance specifically designed for org-mode
+- Inline AI blocks within org documents
+- Supports conversations and code generation
+- Automatic activation in org-mode buffers
 
 ### Development Environment
 - **LSP Support**: Automatic language server activation for major languages
