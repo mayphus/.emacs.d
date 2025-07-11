@@ -68,6 +68,9 @@
 (use-package standard-themes
   :ensure t
   :defer t)
+(use-package ef-themes
+  :ensure t
+  :defer t)
 
 (defmacro my/set-appearance-theme (appearance theme-name)
   "Set macOS APPEARANCE, THEME-NAME, and sync Claude theme."
@@ -84,8 +87,8 @@
   "Set ns-appearance and theme based on system APPEARANCE."
   (when (eq system-type 'darwin)
     (pcase appearance
-      ('light (my/set-appearance-theme light standard-light))
-      ('dark (my/set-appearance-theme dark standard-dark)))))
+      ('light (my/set-appearance-theme light ef-light))
+      ('dark (my/set-appearance-theme dark ef-dark)))))
 
 (when (and (eq system-type 'darwin)
            (boundp 'ns-system-appearance-change-functions))
@@ -338,9 +341,9 @@
   (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package claude-code-ide
-  "claude code IDE integration for Emacs.
-different from claude-code.el, this package provides a more IDE-like experience,
-which just like claude code inside vscode experience."
+  ;; claude code IDE integration for Emacs.
+  ;; different from claude-code.el, this package provides a more IDE-like experience,
+  ;; which just like claude code inside vscode experience."
   :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :defer t
