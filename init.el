@@ -64,7 +64,7 @@
 (unless (server-running-p)
   (server-start))
 
-;; Appearance
+;; Themes
 (use-package standard-themes
   :ensure t
   :defer t)
@@ -72,31 +72,10 @@
   :ensure t
   :defer t)
 
-(defmacro my/set-appearance-theme (appearance theme-name)
-  "Set macOS APPEARANCE, THEME-NAME, and sync Claude theme."
-  `(progn
-     (set-frame-parameter nil 'ns-appearance ',appearance)
-     (load-theme ',theme-name t)
-     ;; (let ((bg (face-background 'default)))
-     ;;   (when (and bg (not (string= bg "unspecified-bg")))
-     ;;     (set-face-background 'fringe bg)))
-     (when (executable-find "claude")
-       (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" ,(symbol-name appearance)))))
-
-(defun my/handle-appearance-change (appearance)
-  "Set ns-appearance and theme based on system APPEARANCE."
-  (when (eq system-type 'darwin)
-    (pcase appearance
-      ('light (my/set-appearance-theme light ef-light))
-      ('dark (my/set-appearance-theme dark ef-dark)))))
-
-(when (and (eq system-type 'darwin)
-           (boundp 'ns-system-appearance-change-functions))
-  (add-hook 'ns-system-appearance-change-functions #'my/handle-appearance-change))
-
-;; Set initial theme based on system appearance
-(when (eq system-type 'darwin)
-  (my/handle-appearance-change (if (string-match-p "Dark" (or (getenv "APPEARANCE") "")) 'dark 'light)))
+(use-package init-themes
+  :load-path "lisp/"
+  :config
+  (my/setup-themes))
 
 ;; Environment Variables
 (use-package exec-path-from-shell
@@ -293,9 +272,14 @@
   (xwidget-webkit-enable-plugins t))
 
 ;; Modal Editing
-(use-package my-meow)
+(use-package init-meow)
 
 ;; AI
+
+;; Claude SDK Integration
+(use-package claude
+  :load-path "lisp/claude.el"
+  :bind-keymap ("C-c l" . claude-command-map))
 
 (use-package gptel
   :ensure t

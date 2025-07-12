@@ -1,4 +1,4 @@
-;;; my-meow.el --- Meow modal editing configuration -*- lexical-binding: t; -*-
+;;; init-meow.el --- Meow modal editing configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Lightweight modal editing configuration using Meow.
@@ -115,6 +115,6 @@
   (add-hook 'prog-mode-hook 'meow-mode)
   (add-hook 'conf-mode-hook 'meow-mode))
 
-(provide 'my-meow)
+(provide 'init-meow)
 
-;;; my-meow.el ends here
+;;; init-meow.el ends here
