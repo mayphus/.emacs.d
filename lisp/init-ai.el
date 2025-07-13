@@ -51,31 +51,5 @@
   ;; Most mode mappings are automatic, only add if needed
   (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
 
-
-(use-package claude-code-ide
-  ;; claude code IDE integration for Emacs.
-  ;; different from claude-code.el, this package provides a more IDE-like experience,
-  ;; which just like claude code inside vscode experience."
-  :ensure t
-  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :defer t
-  :commands (claude-code-ide claude-code-ide-resume claude-code-ide-stop claude-code-ide-list-sessions)
-  :bind (("C-c i i" . claude-code-ide)
-         ("C-c i r" . claude-code-ide-resume)
-         ("C-c i s" . claude-code-ide-stop)
-         ("C-c i l" . claude-code-ide-list-sessions)
-         :map vterm-mode-map
-         ("M-<return>" . claude-code-ide-insert-newline))
-  :config
-  (defun my/claude-code-ide-default-to-emacs-config (orig-fun &rest args)
-    "Use Emacs config folder when not in a project."
-    (let ((default-directory
-           (or (when-let* ((project (project-current)))
-                 (project-root project))
-               user-emacs-directory)))
-      (apply orig-fun args)))
-
-  (advice-add 'claude-code-ide :around #'my/claude-code-ide-default-to-emacs-config))
-
 (provide 'init-ai)
 ;;; init-ai.el ends here
