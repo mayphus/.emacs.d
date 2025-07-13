@@ -65,6 +65,7 @@
   (server-start))
 
 ;; Themes
+
 (use-package standard-themes
   :ensure t
   :defer t)
@@ -73,7 +74,6 @@
   :defer t)
 
 (use-package init-themes
-  :load-path "lisp/"
   :config
   (my/setup-themes))
 
@@ -272,188 +272,13 @@
   :custom
   (xwidget-webkit-enable-plugins t))
 
-;; Modal Editing
+;; Meow
 (use-package init-meow)
 
 ;; AI
+(use-package init-ai)
 
-(use-package claude)
-
-(use-package gptel
-  :ensure t
-  :defer t
-  :commands (gptel gptel-send gptel-menu)
-  :bind (("C-c g" . gptel)
-         ("C-c G" . gptel-menu))
-  :custom
-  (gptel-default-mode 'org-mode)
-  (gptel-model "claude-3-5-sonnet-20241022")
-  (gptel-backend (gptel-make-anthropic "Claude"
-                   :stream t
-                   :key 'gptel-api-key)))
-
-(use-package org-ai
-  :ensure t
-  :defer t
-  :commands (org-ai-mode org-ai-global-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode)
-  :custom
-  (org-ai-default-chat-model "claude-3-5-sonnet-20241022")
-  (org-ai-default-chat-system-prompt "You are a helpful assistant.")
-  :config
-  (org-ai-global-mode))
-
-(use-package claude-code
-  :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :defer t
-  :config (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map)
-  :custom-face
-  (claude-code-repl-face ((t (:family "JuliaMono"))))
-  :config
-  (defun claude-code--directory-advice (orig-fun &rest args)
-    "Advice to default to ~/.emacs.d when no project or file."
-    (let ((result (apply orig-fun args)))
-      (if (string= result "~/")
-          user-emacs-directory
-        result)))
-
-  (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
-
-(use-package claude-code-ide
-  ;; claude code IDE integration for Emacs.
-  ;; different from claude-code.el, this package provides a more IDE-like experience,
-  ;; which just like claude code inside vscode experience."
-  :ensure t
-  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :defer t
-  :commands (claude-code-ide claude-code-ide-resume claude-code-ide-stop claude-code-ide-list-sessions)
-  :bind (("C-c i i" . claude-code-ide)
-         ("C-c i r" . claude-code-ide-resume)
-         ("C-c i s" . claude-code-ide-stop)
-         ("C-c i l" . claude-code-ide-list-sessions)
-         :map vterm-mode-map
-         ("M-<return>" . claude-code-ide-insert-newline))
-  :config
-  (defun my/claude-code-ide-default-to-emacs-config (orig-fun &rest args)
-    "Use Emacs config folder when not in a project."
-    (let ((default-directory
-           (or (when-let* ((project (project-current)))
-                 (project-root project))
-               user-emacs-directory)))
-      (apply orig-fun args)))
-
-  (advice-add 'claude-code-ide :around #'my/claude-code-ide-default-to-emacs-config))
-
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
-  :defer t
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-<tab>" . copilot-accept-completion-by-word))
-  :bind (("C-c M-c" . copilot-mode)
-         ("C-c M-n" . copilot-next-completion)
-         ("C-c M-p" . copilot-previous-completion)
-         ("C-c M-f" . copilot-accept-completion-by-line))
-  :custom
-  (copilot-max-char -1)
-  (copilot-indent-offset-warning-disable t)
-  :config
-  ;; Most mode mappings are automatic, only add if needed
-  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
-
-;; Note-taking and Organization
-;; Create a proper keymap for notes
-(defvar my/notes-map (make-sparse-keymap)
-  "Keymap for note-taking commands.")
-
-(define-key my/notes-map (kbd "n") 'org-capture)
-(define-key my/notes-map (kbd "c") 'consult-notes)
-(define-key my/notes-map (kbd "s") 'consult-notes-search-in-all-notes)
-(define-key my/notes-map (kbd "f") (lambda () (interactive) (consult-find "~/workspace/notes/")))
-(define-key my/notes-map (kbd "r") (lambda () (interactive) (consult-ripgrep "~/workspace/notes/")))
-(define-key my/notes-map (kbd "d") 'deft)
-
-(global-set-key (kbd "C-c n") my/notes-map)
-
-(use-package org
-  :defer t
-  :mode ("\\.org\\'" . org-mode)
-  :custom
-  (org-startup-indented t)
-  (org-pretty-entities t)
-  (org-hide-emphasis-markers t)
-  (org-startup-with-inline-images t)
-  (org-agenda-files '("~/workspace/notes/"))
-  (org-capture-templates
-   '(("n" "Note" plain
-      (file (lambda ()
-              (let* ((title (read-string "Title: "))
-                     (slug (downcase
-                            (replace-regexp-in-string
-                             "[^a-z0-9]+" "-"
-                             (replace-regexp-in-string
-                              "^-\\|-$" ""
-                              (replace-regexp-in-string
-                               "[^[:alnum:][:space:]]" ""
-                               title))))))
-                (setq org-capture-current-title title)
-                (expand-file-name (concat slug ".org") "~/workspace/notes/"))))
-      "#+title:      %(or org-capture-current-title \"\")\n#+filetags:   %(my/org-capture-process-tags)\n\n%?")))
-  :config
-  ;; Configure org-element cache for better performance
-  (setq org-element-use-cache t)
-  (setq org-element-cache-persistent t)
-
-  (defun my/org-capture-process-tags ()
-    "Process tags input for org capture."
-    (let* ((tags-input (read-string "Tags: "))
-           (tags (when (not (string-empty-p tags-input))
-                   (mapcar (lambda (tag)
-                             (downcase (string-trim tag)))
-                           (split-string tags-input "[, ]+" t)))))
-      (if tags
-          (concat ":" (mapconcat 'identity tags ":") ":")
-        "")))
-
-  ;; Apply org heading heights after theme loads
-  (defun my/set-org-heading-heights ()
-    "Set different heights for org heading levels."
-    (custom-set-faces
-     '(org-level-1 ((t (:height 1.5))))
-     '(org-level-2 ((t (:height 1.4))))
-     '(org-level-3 ((t (:height 1.3))))
-     '(org-level-4 ((t (:height 1.2))))
-     '(org-level-5 ((t (:height 1.1))))
-     '(org-level-6 ((t (:height 1.0))))
-     '(org-level-7 ((t (:height 1.0))))
-     '(org-level-8 ((t (:height 1.0))))))
-
-  (add-hook 'after-load-theme-hook 'my/set-org-heading-heights)
-  (my/set-org-heading-heights))
-
-;; Deft for alternative note browsing
-(use-package deft
-  :ensure t
-  :defer t
-  :commands deft
-  :custom
-  (deft-directory "~/workspace/notes/")
-  (deft-recursive t)
-  (deft-extensions '("org" "txt" "md"))
-  (deft-default-extension "org")
-  (deft-text-mode 'org-mode)
-  (deft-use-filename-as-title t)
-  (deft-use-filter-string-for-filename t)
-  (deft-auto-save-interval 0)
-  ;; Optimize for performance
-  (deft-strip-summary-regexp "\\(\\*+\\|#+\\w+:.*\\)")
-  ;; Ignore dot files, hidden files, CLAUDE.md, and README.org files
-  (deft-ignore-file-regexp "\\(?:\\.\\|#\\|~\\|CLAUDE\\.md\\|README\\.org\\)"))
+;; Org, Notes
+(use-package init-org)
 
 ;;; init.el ends here
