@@ -28,6 +28,16 @@
 (save-place-mode 1)
 (global-visual-line-mode)
 
+;; Close window when killing buffer (if more than one window)
+(defun my/kill-buffer-and-window ()
+  "Kill buffer and close its window if there are multiple windows."
+  (interactive)
+  (if (> (length (window-list)) 1)
+      (kill-buffer-and-window)
+    (kill-buffer)))
+
+(global-set-key (kbd "C-x k") 'my/kill-buffer-and-window)
+
 ;; Disable audible bell
 (setq ring-bell-function 'ignore)
 
