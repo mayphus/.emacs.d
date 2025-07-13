@@ -6,8 +6,6 @@
 
 ;;; Code:
 
-(use-package claude)
-
 (use-package gptel
   :ensure t
   :defer t
@@ -33,23 +31,26 @@
   :config
   (org-ai-global-mode))
 
-(use-package claude-code
-  :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
   :defer t
-  :config (claude-code-mode)
-  :bind-keymap ("C-c c" . claude-code-command-map)
-  :custom-face
-  (claude-code-repl-face ((t (:family "JuliaMono"))))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . copilot-accept-completion)
+              ("TAB" . copilot-accept-completion)
+              ("C-TAB" . copilot-accept-completion-by-word)
+              ("C-<tab>" . copilot-accept-completion-by-word))
+  :bind (("C-c M-c" . copilot-mode)
+         ("C-c M-n" . copilot-next-completion)
+         ("C-c M-p" . copilot-previous-completion)
+         ("C-c M-f" . copilot-accept-completion-by-line))
+  :custom
+  (copilot-max-char -1)
+  (copilot-indent-offset-warning-disable t)
   :config
-  (defun claude-code--directory-advice (orig-fun &rest args)
-    "Advice to default to ~/.emacs.d when no project or file."
-    (let ((result (apply orig-fun args)))
-      (if (string= result "~/")
-          user-emacs-directory
-        result)))
+  ;; Most mode mappings are automatic, only add if needed
+  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
 
-  (advice-add 'claude-code--directory :around #'claude-code--directory-advice))
 
 (use-package claude-code-ide
   ;; claude code IDE integration for Emacs.
@@ -75,26 +76,6 @@
       (apply orig-fun args)))
 
   (advice-add 'claude-code-ide :around #'my/claude-code-ide-default-to-emacs-config))
-
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
-  :defer t
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-<tab>" . copilot-accept-completion-by-word))
-  :bind (("C-c M-c" . copilot-mode)
-         ("C-c M-n" . copilot-next-completion)
-         ("C-c M-p" . copilot-previous-completion)
-         ("C-c M-f" . copilot-accept-completion-by-line))
-  :custom
-  (copilot-max-char -1)
-  (copilot-indent-offset-warning-disable t)
-  :config
-  ;; Most mode mappings are automatic, only add if needed
-  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
 
 (provide 'init-ai)
 ;;; init-ai.el ends here
