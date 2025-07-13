@@ -38,6 +38,7 @@ tramp
 session.*
 desktop
 desktop.lock
+ielm-history.eld
 
 # Network security
 network-security.data

@@ -116,7 +116,8 @@
   :init (vertico-mode)
   :custom
   (vertico-cycle t)
-  (vertico-resize t))
+  (vertico-resize t)
+  (vertico-count 99))
 
 (use-package marginalia
   :ensure t
@@ -276,10 +277,7 @@
 
 ;; AI
 
-;; Claude SDK Integration
-(use-package claude
-  :load-path "lisp/claude.el"
-  :bind-keymap ("C-c l" . claude-command-map))
+(use-package claude)
 
 (use-package gptel
   :ensure t
