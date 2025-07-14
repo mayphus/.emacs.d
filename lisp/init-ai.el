@@ -31,7 +31,9 @@
   :config
   (org-ai-global-mode))
 
-;; my custom AI tools
+(use-package claude-code-ide
+  :bind ("C-c i" . claude-code-ide))
+
 (use-package claude-code
   :bind ("C-c c" . claude-code))
 

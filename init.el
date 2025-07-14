@@ -25,15 +25,6 @@
 (save-place-mode 1)
 (global-visual-line-mode)
 
-(defun my/kill-buffer-and-window ()
-  "Kill buffer and close its window if there are multiple windows."
-  (interactive)
-  (if (> (length (window-list)) 1)
-      (kill-buffer-and-window)
-    (kill-buffer)))
-
-(global-set-key (kbd "C-x k") 'my/kill-buffer-and-window)
-
 (setq ring-bell-function 'ignore)
 
 (setq auto-revert-verbose nil
@@ -189,11 +180,16 @@
   :ensure t
   :bind ("C-=" . er/expand-region))
 
-(use-package flymake
-  :hook (prog-mode . flymake-mode)
-  :bind (:map flymake-mode-map
-              ("M-n" . flymake-goto-next-error)
-              ("M-p" . flymake-goto-prev-error)))
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode)
+  :custom
+  (flycheck-display-errors-delay 0.3)
+  (flycheck-idle-change-delay 0.3)
+  :bind (:map flycheck-mode-map
+              ("M-n" . flycheck-next-error)
+              ("M-p" . flycheck-previous-error)
+              ("C-c ! l" . flycheck-list-errors)))
 
 (use-package dap-mode
   :ensure t
@@ -211,6 +207,14 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
+
+(use-package vterm
+  :ensure t
+  :defer t
+  :bind ("C-c t" . vterm)
+  :custom
+  (vterm-max-scrollback 10000)
+  (vterm-kill-buffer-on-exit t))
 
 (use-package eat
   :ensure t
@@ -250,5 +254,7 @@
 
 ;; Org, Notes
 (use-package init-org)
+
+(use-package english-words)
 
 ;;; init.el ends here
