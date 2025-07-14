@@ -38,8 +38,12 @@
          ("C-c i k" . claude-code-ide-stop)
          ("C-c i b" . claude-code-ide-switch-to-buffer)
          ("C-c i l" . claude-code-ide-list-sessions))
-  :custom
-  (claude-code-ide-use-side-window nil))
+  :config
+  (defun claude-code-ide--get-working-directory ()
+    "Get the current working directory (project root or Emacs config directory)."
+    (if-let ((project (project-current)))
+        (expand-file-name (project-root project))
+      (expand-file-name user-emacs-directory))))
 
 (use-package claude-code
   :bind ("C-c c" . claude-code))
