@@ -32,7 +32,14 @@
   (org-ai-global-mode))
 
 (use-package claude-code-ide
-  :bind ("C-c i" . claude-code-ide))
+  :bind (("C-c i i" . claude-code-ide)
+         ("C-c i r" . claude-code-ide-resume)
+         ("C-c i s" . claude-code-ide-check-status)
+         ("C-c i k" . claude-code-ide-stop)
+         ("C-c i b" . claude-code-ide-switch-to-buffer)
+         ("C-c i l" . claude-code-ide-list-sessions))
+  :custom
+  (claude-code-ide-use-side-window nil))
 
 (use-package claude-code
   :bind ("C-c c" . claude-code))
