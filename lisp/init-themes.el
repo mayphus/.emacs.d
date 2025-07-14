@@ -12,24 +12,23 @@
   :ensure t
   :defer t)
 
-(defvar my/ef-light-themes
+(defvar my/light-themes
   '(ef-arbutus ef-cyprus ef-day ef-deuteranopia-light ef-duo-light
     ef-eagle ef-elea-light ef-frost ef-kassio ef-light
     ef-maris-light ef-melissa-light ef-reverie ef-spring
     ef-summer ef-trio-light ef-tritanopia-light)
-  "List of ef-themes light variants for daily rotation.")
+  "List of light themes.")
 
-(defvar my/ef-dark-themes
+(defvar my/dark-themes
   '(ef-autumn ef-bio ef-cherie ef-dark ef-deuteranopia-dark
     ef-dream ef-duo-dark ef-elea-dark ef-maris-dark ef-melissa-dark
     ef-night ef-owl ef-rosa ef-symbiosis ef-trio-dark
     ef-tritanopia-dark ef-winter)
-  "List of ef-themes dark variants for daily rotation.")
+  "List of dark themes.")
 
-(defun my/get-daily-theme (theme-list)
-  "Get a theme from THEME-LIST based on the current day of the year."
-  (let ((day-of-year (string-to-number (format-time-string "%j"))))
-    (nth (mod day-of-year (length theme-list)) theme-list)))
+(defun my/get-random-theme (theme-list)
+  "Get a random theme from THEME-LIST."
+  (nth (random (length theme-list)) theme-list))
 
 (defmacro my/set-appearance-theme (appearance theme-name)
   "Set macOS APPEARANCE, THEME-NAME, and sync Claude theme."
@@ -40,13 +39,13 @@
        (start-process "claude-theme" nil "claude" "config" "set" "-g" "theme" ,(symbol-name appearance)))))
 
 (defun my/handle-appearance-change (appearance)
-  "Set ns-appearance and theme based on system APPEARANCE with daily rotation."
+  "Set ns-appearance and theme based on system APPEARANCE with random selection."
   (when (eq system-type 'darwin)
     (pcase appearance
-      ('light (let ((daily-theme (my/get-daily-theme my/ef-light-themes)))
-                (eval `(my/set-appearance-theme light ,daily-theme))))
-      ('dark (let ((daily-theme (my/get-daily-theme my/ef-dark-themes)))
-               (eval `(my/set-appearance-theme dark ,daily-theme)))))))
+      ('light (let ((random-theme (my/get-random-theme my/light-themes)))
+                (eval `(my/set-appearance-theme light ,random-theme))))
+      ('dark (let ((random-theme (my/get-random-theme my/dark-themes)))
+               (eval `(my/set-appearance-theme dark ,random-theme)))))))
 
 (defun my/setup-themes ()
   "Setup theme packages and appearance handling."
