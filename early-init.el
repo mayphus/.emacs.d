@@ -56,7 +56,10 @@
 ;; Load path enhancement: prepare for custom elisp greatness
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
-    (add-to-list 'load-path lisp-dir t)))
+    (add-to-list 'load-path lisp-dir t)
+    (dolist (dir (directory-files lisp-dir t "^[^.]"))
+      (when (file-directory-p dir)
+        (add-to-list 'load-path dir t)))))
 
 (setq package-enable-at-startup nil)
 (require 'package)
