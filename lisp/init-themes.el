@@ -5,7 +5,13 @@
 
 ;;; Code:
 
-;; Daily theme rotation lists
+(use-package standard-themes
+  :ensure t
+  :defer t)
+(use-package ef-themes
+  :ensure t
+  :defer t)
+
 (defvar my/ef-light-themes
   '(ef-arbutus ef-cyprus ef-day ef-deuteranopia-light ef-duo-light
     ef-eagle ef-elea-light ef-frost ef-kassio ef-light
@@ -48,10 +54,9 @@
   (when (and (eq system-type 'darwin)
              (boundp 'ns-system-appearance-change-functions))
     (add-hook 'ns-system-appearance-change-functions #'my/handle-appearance-change))
-  
-  ;; Set initial theme based on system appearance
+
   (when (eq system-type 'darwin)
-    (my/handle-appearance-change 
+    (my/handle-appearance-change
      (if (string-match-p "Dark" (or (getenv "APPEARANCE") "")) 'dark 'light))))
 
 (provide 'init-themes)

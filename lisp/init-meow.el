@@ -41,7 +41,8 @@
      '("9" . meow-digit-argument)
      '("0" . meow-digit-argument)
      '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
+     '("?" . meow-cheatsheet)
+     '("b" . consult-buffer))
 
     ;; Normal state bindings
     (meow-normal-define-key

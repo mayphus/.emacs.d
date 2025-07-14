@@ -31,25 +31,9 @@
   :config
   (org-ai-global-mode))
 
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el" :rev :newest)
-  :defer t
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . copilot-accept-completion)
-              ("TAB" . copilot-accept-completion)
-              ("C-TAB" . copilot-accept-completion-by-word)
-              ("C-<tab>" . copilot-accept-completion-by-word))
-  :bind (("C-c M-c" . copilot-mode)
-         ("C-c M-n" . copilot-next-completion)
-         ("C-c M-p" . copilot-previous-completion)
-         ("C-c M-f" . copilot-accept-completion-by-line))
-  :custom
-  (copilot-max-char -1)
-  (copilot-indent-offset-warning-disable t)
-  :config
-  ;; Most mode mappings are automatic, only add if needed
-  (add-to-list 'copilot-major-mode-alist '("elisp" . "emacs-lisp")))
+;; my custom AI tools
+(use-package claude-code
+  :bind ("C-c c" . claude-code))
 
 (provide 'init-ai)
 ;;; init-ai.el ends here
