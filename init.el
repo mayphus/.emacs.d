@@ -36,13 +36,10 @@
   (tab-width 2)
   (indent-tabs-mode nil)
   (js-indent-level 2)
+  ;; Use GNU ls if available for better dired functionality
+  (insert-directory-program (when (executable-find "gls") "gls"))
   :bind (("C-s-f" . toggle-frame-fullscreen)
          ("C-c e" . eshell)))
-
-(use-package emacs
-  :if (executable-find "gls")
-  :custom
-  (insert-directory-program "gls"))
 
 (use-package emacs
   :config
