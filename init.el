@@ -6,10 +6,6 @@
 
 ;;; Code:
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 (let ((backup-dir (expand-file-name "backups/backups/" user-emacs-directory))
       (auto-save-dir (expand-file-name "backups/auto-saves/" user-emacs-directory)))
   (dolist (dir (list backup-dir auto-save-dir))
@@ -19,39 +15,67 @@
         auto-save-file-name-transforms `((".*" ,auto-save-dir t))
         auto-save-list-file-prefix (expand-file-name ".saves-" auto-save-dir)))
 
-(defalias 'yes-or-no-p 'y-or-n-p)
-(global-auto-revert-mode 1)
-(savehist-mode 1)
-(save-place-mode 1)
-(global-visual-line-mode)
+(use-package emacs
+  :config
+  ;; Simplify yes/no prompts
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Auto-revert files when changed on disk
+  (global-auto-revert-mode 1)
+  ;; Better text wrapping
+  (global-visual-line-mode)
+  ;; Silence bell
+  (setq ring-bell-function 'ignore)
+  :custom
+  ;; Auto-revert settings
+  (auto-revert-verbose nil)
+  (dired-auto-revert-buffer t)
+  ;; Warning levels
+  (warning-minimum-level :error)
+  (byte-compile-warnings '(not docstrings))
+  ;; Indentation
+  (tab-width 2)
+  (indent-tabs-mode nil)
+  (js-indent-level 2)
+  :bind (("C-s-f" . toggle-frame-fullscreen)
+         ("C-c e" . eshell)))
 
-(setq ring-bell-function 'ignore)
+(use-package emacs
+  :if (executable-find "gls")
+  :custom
+  (insert-directory-program "gls"))
 
-(setq auto-revert-verbose nil
-      dired-auto-revert-buffer t
-      warning-minimum-level :error
-      byte-compile-warnings '(not docstrings))
+(use-package emacs
+  :config
+  (add-hook 'before-save-hook 'delete-trailing-whitespace))
 
-(setq-default tab-width 2
-              indent-tabs-mode nil)
-(setq js-indent-level 2)
+(use-package custom
+    :config
+    (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+    (when (file-exists-p custom-file)
+      (load custom-file)))
 
-(add-hook 'json-mode-hook
-  (lambda ()
-    (when (< (buffer-size) 50000)
-      (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))
+(use-package savehist
+  :config
+  (savehist-mode 1))
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(use-package saveplace
+  :config
+  (save-place-mode 1))
 
-(when (fboundp 'pixel-scroll-precision-mode)
+(use-package emacs
+  :hook (json-mode . (lambda ()
+                       (when (< (buffer-size) 50000)
+                         (add-hook 'before-save-hook 'json-pretty-print-buffer nil t)))))
+
+(use-package pixel-scroll
+  :if (fboundp 'pixel-scroll-precision-mode)
+  :config
   (pixel-scroll-precision-mode 1))
 
-(global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
-(global-set-key (kbd "C-c e") 'eshell)
-
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+(use-package server
+  :config
+  (unless (server-running-p)
+    (server-start)))
 
 (use-package init-themes
   :config (my/setup-themes))
@@ -69,9 +93,6 @@
        "HF_TOKEN"
        "CLOUDFLARE_API_TOKEN"))
     (exec-path-from-shell-initialize)))
-
-(when (executable-find "gls")
-  (setq insert-directory-program "gls"))
 
 (use-package magit
   :ensure t
@@ -204,8 +225,8 @@
 (use-package treesit-auto
   :ensure t
   :defer t
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
+  :custom
+  (setq treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
 (use-package vterm
