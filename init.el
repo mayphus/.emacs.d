@@ -39,11 +39,11 @@
   ;; Use GNU ls if available for better dired functionality
   (insert-directory-program (when (executable-find "gls") "gls"))
   :bind (("C-s-f" . toggle-frame-fullscreen)
-         ("C-c e" . eshell)))
-
-(use-package emacs
-  :config
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+         ("C-c e" . eshell))
+  :hook ((before-save . delete-trailing-whitespace)
+         (json-mode . (lambda ()
+                        (when (< (buffer-size) 50000)
+                          (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))))
 
 (use-package custom
     :config
@@ -59,10 +59,6 @@
   :config
   (save-place-mode 1))
 
-(use-package emacs
-  :hook (json-mode . (lambda ()
-                       (when (< (buffer-size) 50000)
-                         (add-hook 'before-save-hook 'json-pretty-print-buffer nil t)))))
 
 (use-package pixel-scroll
   :if (fboundp 'pixel-scroll-precision-mode)
