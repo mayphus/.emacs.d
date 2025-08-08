@@ -20,12 +20,14 @@
                    :key 'gptel-api-key)))
 
 (use-package claude-code-ide
+  :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup))
 
 (use-package claude-code
+  :ensure t
   :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
   :bind ("C-c c" . claude-code))
 

@@ -194,16 +194,16 @@
   :ensure t
   :bind ("C-=" . er/expand-region))
 
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode)
-  :custom
-  (flycheck-display-errors-delay 0.3)
-  (flycheck-idle-change-delay 0.3)
-  :bind (:map flycheck-mode-map
-              ("M-n" . flycheck-next-error)
-              ("M-p" . flycheck-previous-error)
-              ("C-c ! l" . flycheck-list-errors)))
+;; (use-package flycheck
+;;   :ensure t
+;;   :init (global-flycheck-mode)
+;;   :custom
+;;   (flycheck-display-errors-delay 0.3)
+;;   (flycheck-idle-change-delay 0.3)
+;;   :bind (:map flycheck-mode-map
+;;               ("M-n" . flycheck-next-error)
+;;               ("M-p" . flycheck-previous-error)
+;;               ("C-c ! l" . flycheck-list-errors)))
 
 (use-package dap-mode
   :ensure t
@@ -214,6 +214,19 @@
   :ensure t
   :defer t
   :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
+
+(use-package flymake
+  :ensure t
+  :hook (prog-mode . flymake-mode)
+  :custom
+  (flymake-no-changes-timeout 0.5)
+  (flymake-start-on-flymake-mode t)
+  (flymake-start-on-save-buffer t)
+  :bind (:map flymake-mode-map
+              ("M-n" . flymake-goto-next-error)
+              ("M-p" . flymake-goto-prev-error)
+              ("C-c ! l" . flymake-show-buffer-diagnostics)
+              ("C-c ! p" . flymake-show-project-diagnostics)))
 
 (use-package treesit-auto
   :ensure t
