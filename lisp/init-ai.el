@@ -26,10 +26,5 @@
   :config
   (claude-code-ide-emacs-tools-setup))
 
-(use-package claude-code
-  :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :bind ("C-c c" . claude-code))
-
 (provide 'init-ai)
 ;;; init-ai.el ends here
