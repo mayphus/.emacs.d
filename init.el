@@ -269,6 +269,4 @@
 ;; Org, Notes
 (use-package init-org)
 
-(use-package english-words)
-
 ;;; init.el ends here

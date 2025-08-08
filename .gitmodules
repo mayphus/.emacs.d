@@ -1,9 +1,0 @@
-[submodule "lisp/english-words.el"]
-	path = lisp/english-words.el
-	url = https://github.com/mayphus/english-words.el.git
-[submodule "lisp/claude-code.el"]
-	path = lisp/claude-code.el
-	url = https://github.com/mayphus/claude-code.el.git
-[submodule "lisp/claude-code-ide.el"]
-	path = lisp/claude-code-ide.el
-	url = https://github.com/mayphus/claude-code-ide.el.git
