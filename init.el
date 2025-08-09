@@ -46,10 +46,10 @@
                           (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))))
 
 (use-package custom
-    :config
-    (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-    (when (file-exists-p custom-file)
-      (load custom-file)))
+  :config
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file)))
 
 (use-package savehist
   :config
@@ -252,12 +252,11 @@
 
 (use-package eshell
   :defer t
-  :init
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (define-key eshell-mode-map (kbd "C-r") 'consult-history)
-              (define-key eshell-mode-map (kbd "C-p") 'eshell-previous-input)
-              (define-key eshell-mode-map (kbd "C-n") 'eshell-next-input))))
+  :hook ((eshell-mode . goto-address-mode)
+         (eshell-mode . (lambda ()
+                          (define-key eshell-mode-map (kbd "C-r") 'consult-history)
+                          (define-key eshell-mode-map (kbd "C-p") 'eshell-previous-input)
+                          (define-key eshell-mode-map (kbd "C-n") 'eshell-next-input)))))
 
 (use-package xwidget
   :when (featurep 'xwidget-internal)
