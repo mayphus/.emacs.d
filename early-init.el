@@ -38,6 +38,9 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(horizontal-scroll-bars) default-frame-alist)
 
+;; Maximize frame on startup
+(add-hook 'window-setup-hook #'toggle-frame-maximized)
+
 ;; Darwin-specific optimizations for the enlightened macOS user
 (when (eq system-type 'darwin)
   (push '(ns-transparent-titlebar . t) default-frame-alist)

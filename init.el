@@ -194,16 +194,11 @@
   :ensure t
   :bind ("C-=" . er/expand-region))
 
-;; (use-package flycheck
-;;   :ensure t
-;;   :init (global-flycheck-mode)
-;;   :custom
-;;   (flycheck-display-errors-delay 0.3)
-;;   (flycheck-idle-change-delay 0.3)
-;;   :bind (:map flycheck-mode-map
-;;               ("M-n" . flycheck-next-error)
-;;               ("M-p" . flycheck-previous-error)
-;;               ("C-c ! l" . flycheck-list-errors)))
+(use-package ace-window
+  :ensure t
+  :bind ("M-o" . ace-window)
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package dap-mode
   :ensure t
