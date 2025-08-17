@@ -234,6 +234,7 @@
   :ensure t
   :defer t
   :bind ("C-c t" . vterm)
+  :hook (vterm-mode . goto-address-mode)
   :custom
   (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t))
