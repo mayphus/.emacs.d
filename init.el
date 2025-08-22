@@ -107,8 +107,7 @@
   :init (vertico-mode)
   :custom
   (vertico-cycle t)
-  (vertico-resize t)
-  (vertico-count 99))
+  (vertico-resize t))
 
 (use-package marginalia
   :ensure t
