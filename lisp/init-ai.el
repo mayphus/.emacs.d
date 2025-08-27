@@ -23,6 +23,8 @@
   :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :bind ("C-c C-'" . claude-code-ide-menu)
+  :custom
+  (claude-code-ide-use-side-window nil)
   :config
   (claude-code-ide-emacs-tools-setup))
 
