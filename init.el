@@ -70,8 +70,8 @@
   (unless (server-running-p)
     (server-start)))
 
-(use-package init-themes
-  :config (my/setup-themes))
+;; (use-package init-themes
+;;   :config (my/setup-themes))
 
 (use-package exec-path-from-shell
   :ensure t
@@ -272,8 +272,6 @@
          ("=" . xwidget-webkit-zoom-out))
   :custom
   (xwidget-webkit-enable-plugins t))
-
-(use-package init-meow)
 
 (use-package init-ai)
 
