@@ -22,7 +22,7 @@
 (use-package claude-code-ide
   :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("s-i" . claude-code-ide-menu)
+  :bind ("C-c ;" . claude-code-ide-menu)
   :custom
   (claude-code-ide-use-side-window nil)
   :config
