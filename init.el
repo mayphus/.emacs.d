@@ -59,7 +59,6 @@
   :config
   (save-place-mode 1))
 
-
 (use-package pixel-scroll
   :if (fboundp 'pixel-scroll-precision-mode)
   :config
@@ -70,8 +69,8 @@
   (unless (server-running-p)
     (server-start)))
 
-;; (use-package init-themes
-;;   :config (my/setup-themes))
+(use-package init-themes
+  :config (my/setup-themes))
 
 (use-package exec-path-from-shell
   :ensure t
