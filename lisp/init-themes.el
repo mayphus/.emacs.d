@@ -7,9 +7,6 @@
 
 (use-package standard-themes
   :ensure t)
-  ;; :config
-  ;; (setq standard-themes-bold-constructs nil
-  ;;       standard-themes-italic-constructs t))
 
 (defmacro my/set-appearance-theme (appearance theme-name)
   "Set macOS APPEARANCE, THEME-NAME, and sync Claude theme."
