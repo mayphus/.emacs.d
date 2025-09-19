@@ -1,0 +1,3 @@
+[submodule "lisp/codex.el"]
+	path = lisp/codex.el
+	url = https://github.com/mayphus/codex.el.git
