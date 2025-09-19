@@ -86,6 +86,10 @@
        "CLOUDFLARE_API_TOKEN"))
     (exec-path-from-shell-initialize)))
 
+(use-package codex
+  :load-path "lisp/codex.el"
+  :commands (codex-run))
+
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
