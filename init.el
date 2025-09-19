@@ -88,7 +88,8 @@
 
 (use-package codex
   :load-path "lisp/codex.el"
-  :commands (codex))
+  :commands (codex)
+  :bind (("C-c c" . codex)))
 
 (use-package magit
   :ensure t
