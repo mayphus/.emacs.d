@@ -19,14 +19,5 @@
                    :stream t
                    :key 'gptel-api-key)))
 
-(use-package claude-code-ide
-  :ensure t
-  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("C-c c" . claude-code-ide-menu)
-  :custom
-  (claude-code-ide-use-side-window nil)
-  :config
-  (claude-code-ide-emacs-tools-setup))
-
 (provide 'init-ai)
 ;;; init-ai.el ends here
