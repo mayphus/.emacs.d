@@ -57,23 +57,7 @@
                            (split-string tags-input "[, ]+" t)))))
       (if tags
           (concat ":" (mapconcat 'identity tags ":") ":")
-        "")))
-
-  ;; Apply org heading heights after theme loads
-  (defun my/set-org-heading-heights ()
-    "Set different heights for org heading levels."
-    (custom-set-faces
-     '(org-level-1 ((t (:height 1.5))))
-     '(org-level-2 ((t (:height 1.4))))
-     '(org-level-3 ((t (:height 1.3))))
-     '(org-level-4 ((t (:height 1.2))))
-     '(org-level-5 ((t (:height 1.1))))
-     '(org-level-6 ((t (:height 1.0))))
-     '(org-level-7 ((t (:height 1.0))))
-     '(org-level-8 ((t (:height 1.0))))))
-
-  (add-hook 'after-load-theme-hook 'my/set-org-heading-heights)
-  (my/set-org-heading-heights))
+        ""))))
 
 ;; Deft for alternative note browsing
 (use-package deft

@@ -21,10 +21,21 @@
   (defalias 'yes-or-no-p 'y-or-n-p)
   ;; Auto-revert files when changed on disk
   (global-auto-revert-mode 1)
-  ;; Better text wrapping
-  (global-visual-line-mode)
+  ;; Better text wrapping handled per-mode via hooks
   ;; Silence bell
   (setq ring-bell-function 'ignore)
+
+  (defun my/json-pretty-print-buffer ()
+    "Pretty print the current JSON buffer on demand."
+    (interactive)
+    (require 'json)
+    (if (<= (buffer-size) 50000)
+        (json-pretty-print-buffer)
+      (user-error "JSON buffer too large to pretty-print automatically")))
+
+  (defun my/json-setup-json-formatting ()
+    "Install handy JSON formatting helpers for the current buffer."
+    (local-set-key (kbd "C-c C-f") #'my/json-pretty-print-buffer))
   :custom
   ;; Auto-revert settings
   (auto-revert-verbose nil)
@@ -41,9 +52,8 @@
   :bind (("C-s-f" . toggle-frame-fullscreen)
          ("C-c e" . eshell))
   :hook ((before-save . delete-trailing-whitespace)
-         (json-mode . (lambda ()
-                        (when (< (buffer-size) 50000)
-                          (add-hook 'before-save-hook 'json-pretty-print-buffer nil t))))))
+         (text-mode . visual-line-mode)
+         (json-mode . my/json-setup-json-formatting)))
 
 (use-package custom
   :config
@@ -231,7 +241,8 @@
   :ensure t
   :defer t
   :custom
-  (setq treesit-auto-add-to-auto-mode-alist 'all)
+  (treesit-auto-add-to-auto-mode-alist t)
+  :config
   (global-treesit-auto-mode))
 
 (use-package vterm
