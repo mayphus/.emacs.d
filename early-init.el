@@ -50,9 +50,6 @@
 (setq read-process-output-max (* 1024 1024)  ; 1MB
       process-adaptive-read-buffering nil)
 
-;; Suppression of frivolous warnings for the focused mind
-(setq warning-suppress-types '((comp) (bytecomp)))
-
 ;; Load path enhancement: prepare for custom elisp greatness
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)

@@ -41,7 +41,7 @@
   (auto-revert-verbose nil)
   (dired-auto-revert-buffer t)
   ;; Warning levels
-  (warning-minimum-level :error)
+  (warning-minimum-level :warning)
   (byte-compile-warnings '(not docstrings))
   ;; Indentation
   (tab-width 2)
@@ -149,6 +149,11 @@
 (use-package consult-notes
   :ensure t
   :commands (consult-notes consult-notes-search-in-all-notes)
+  :init
+  (dolist (dir '("~/workspace/notes/" "~/workspace/notes/journal/"))
+    (let ((expanded (expand-file-name dir)))
+      (unless (file-directory-p expanded)
+        (make-directory expanded t))))
   :custom
   (consult-notes-file-dir-sources
    `(("Notes" ?n "~/workspace/notes/")
@@ -239,7 +244,7 @@
 
 (use-package treesit-auto
   :ensure t
-  :defer t
+  :demand t
   :custom
   (treesit-auto-add-to-auto-mode-alist t)
   :config
