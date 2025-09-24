@@ -29,7 +29,6 @@ This is the trimmed configuration that I run day-to-day.  It focuses on fast sta
 - Eglot auto-connects language servers for Python, JS/TS, Go, and Rust buffers
 - Flymake reports diagnostics inline with quick navigation on `M-n` / `M-p`
 - Tree-sitter grammars load via `treesit-auto` for modern syntax highlighting
-- DAP mode hangs off `C-c d` when a debugger session is needed
 - Vterm provides a full terminal on `C-c t`, while Eat upgrades Eshell interactions
 
 ** Version Control
@@ -56,7 +55,6 @@ M-o           ace-window                 ; quick window switching
 C-c e         eshell                     ; open Eshell in the current project
 C-c t         vterm                      ; launch vterm
 C-c c         codex                      ; Codex assistant
-C-c d         dap-debug                  ; start DAP session
 C-x g         magit-status               ; Git porcelain
 C- =          er/expand-region           ; grow selection
 #+end_example
@@ -80,4 +78,3 @@ C- =          er/expand-region           ; grow selection
 ** Troubleshooting
 - Toggle Vertico (`M-x vertico-mode`) or Corfu (`M-x corfu-mode`) if completion behaves oddly
 - Reinstall tree-sitter grammars with `M-x treesit-install-language-grammar` when adding languages
-- DAP configurations live under project `.vscode/launch.json`; copy them into `.dap.json` if Emacs cannot find them

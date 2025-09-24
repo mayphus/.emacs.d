@@ -193,11 +193,6 @@
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-(use-package dap-mode
-  :ensure t
-  :defer t
-  :bind ("C-c d" . dap-debug))
-
 (use-package eglot
   :ensure t
   :defer t
