@@ -228,13 +228,6 @@
   (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t))
 
-(use-package eat
-  :ensure t
-  :defer t
-  :hook (eshell-load . eat-eshell-mode)
-  :config
-  (setq eat-enable-mouse t))
-
 (use-package eshell
   :defer t
   :hook ((eshell-mode . goto-address-mode)
