@@ -65,7 +65,7 @@ C- =          er/expand-region           ; grow selection
 ├── early-init.el        ; startup tuning
 ├── init.el              ; primary configuration
 ├── lisp/
-│   └── init-org.el      ; Org-mode and notes setup
+│   └── codex.el/        ; Codex assistant package
 └── backups/             ; auto-generated backup and autosave files
 #+end_example
 
