@@ -236,8 +236,6 @@
                           (define-key eshell-mode-map (kbd "C-p") 'eshell-previous-input)
                           (define-key eshell-mode-map (kbd "C-n") 'eshell-next-input)))))
 
-
-;; Org, Notes
 (defconst my/org-notes-directory (expand-file-name "~/workspace/notes/")
   "Primary directory for Org notes.")
 
