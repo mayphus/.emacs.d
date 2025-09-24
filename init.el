@@ -146,28 +146,6 @@
          ("M-s g" . consult-grep)
          ("M-s r" . consult-ripgrep)))
 
-(use-package consult-notes
-  :ensure t
-  :commands (consult-notes consult-notes-search-in-all-notes)
-  :init
-  (dolist (dir '("~/workspace/notes/" "~/workspace/notes/journal/"))
-    (let ((expanded (expand-file-name dir)))
-      (unless (file-directory-p expanded)
-        (make-directory expanded t))))
-  :custom
-  (consult-notes-file-dir-sources
-   `(("Notes" ?n "~/workspace/notes/")
-     ("Journal" ?j "~/workspace/notes/journal/")))
-  (consult-notes-use-find-command t)
-  :config
-  ;; Initialize the cache
-  (when (fboundp 'consult-notes-cache-setup)
-    (consult-notes-cache-setup))
-
-  ;; Disable org-headings-mode to avoid cache issues
-  ;; Re-enable once org-element-cache issues are resolved
-  ;; (consult-notes-org-headings-mode)
-  )
 
 (use-package embark
   :ensure t
@@ -214,10 +192,6 @@
   :bind ("M-o" . ace-window)
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-
-(use-package dired-sidebar
-  :ensure t
-  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar)))
 
 (use-package dap-mode
   :ensure t
@@ -274,23 +248,6 @@
                           (define-key eshell-mode-map (kbd "C-p") 'eshell-previous-input)
                           (define-key eshell-mode-map (kbd "C-n") 'eshell-next-input)))))
 
-(use-package xwidget
-  :when (featurep 'xwidget-internal)
-  :defer t
-  :bind (("C-c x" . xwidget-webkit-browse-url)
-         :map xwidget-webkit-mode-map
-         ("h" . xwidget-webkit-back)
-         ("l" . xwidget-webkit-forward)
-         ("r" . xwidget-webkit-reload)
-         ("q" . quit-window)
-         ("g" . xwidget-webkit-browse-url)
-         ("+" . xwidget-webkit-zoom-in)
-         ("-" . xwidget-webkit-zoom-out)
-         ("=" . xwidget-webkit-zoom-out))
-  :custom
-  (xwidget-webkit-enable-plugins t))
-
-(use-package init-ai)
 
 ;; Org, Notes
 (use-package init-org)

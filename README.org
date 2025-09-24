@@ -1,0 +1,83 @@
+* Personal Emacs Environment
+
+This is the trimmed configuration that I run day-to-day.  It focuses on fast startup, frictionless completion, and a light note-taking workflow while keeping optional layers to a minimum.
+
+** Getting Started
+- Clone or symlink this directory to `~/.emacs.d/`
+- Launch Emacs normally; packages install on the first run
+- Install language servers you care about (pylsp, typescript-language-server, gopls, rust-analyzer, …)
+- Set any API tokens in your shell before launching if you plan to use Codex
+
+** Startup & Environment
+- `early-init.el` lifts GC thresholds, enables native compilation, and hides the default chrome for a clean frame
+- `exec-path-from-shell` pulls macOS environment variables into Emacs so tools inherit the right PATH
+- Backups and auto-saves land in `backups/` to keep projects tidy
+
+** Completion & Navigation
+- Vertico, Orderless, and Marginalia power the minibuffer with fuzzy matching and annotations
+- Consult provides buffer/file switching, ripgrep search, and jump commands
+- Embark adds context actions, with Consult previews when collecting candidates
+- Corfu delivers in-buffer completion popups, with Cape contributing dabbrev/file sources
+- Which-key keeps command discovery fast during minibuffer prompts
+
+** Editing Essentials
+- `global-auto-revert-mode` and diff-hl keep buffers fresh and highlight Git changes
+- Expand-region grows selections semantically; ace-window hops between windows using home-row keys
+- Pixel-precision scrolling enables smoother trackpad motion on builds that support it
+
+** Development Tooling
+- Eglot auto-connects language servers for Python, JS/TS, Go, and Rust buffers
+- Flymake reports diagnostics inline with quick navigation on `M-n` / `M-p`
+- Tree-sitter grammars load via `treesit-auto` for modern syntax highlighting
+- DAP mode hangs off `C-c d` when a debugger session is needed
+- Vterm provides a full terminal on `C-c t`, while Eat upgrades Eshell interactions
+
+** Version Control
+- Magit (`C-x g`) is the primary Git porcelain
+- Forge remains available for GitHub/GitLab issue work should it be needed
+- Diff-hl shows line-level changes both in buffers and Dired
+
+** AI Integration
+- Codex (in `lisp/codex.el/`) binds to `C-c c` for project-aware assistance
+- Export tokens like `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `HF_TOKEN`, or `CLOUDFLARE_API_TOKEN` only if you plan to use those providers
+
+** Notes & Knowledge Management
+- Org-mode points at `~/workspace/notes/` and ensures it exists at startup
+- `org-capture` (`C-c n`) appends quick entries into `inbox.org`
+- `org-agenda` (`C-c a`) reads from the same vault for daily planning
+
+** Key Bindings (selection)
+#+begin_example
+C-s           consult-line               ; live buffer search
+C-x b / C-x C-b consult-buffer           ; buffer switcher with previews
+C-x C-r       consult-recent-file        ; recent files list
+C-. / C-;     embark-act / embark-dwim   ; context actions
+M-o           ace-window                 ; quick window switching
+C-c e         eshell                     ; open Eshell in the current project
+C-c t         vterm                      ; launch vterm
+C-c c         codex                      ; Codex assistant
+C-c d         dap-debug                  ; start DAP session
+C-x g         magit-status               ; Git porcelain
+C- =          er/expand-region           ; grow selection
+#+end_example
+
+** Repository Layout
+#+begin_example
+~/.emacs.d/
+├── early-init.el        ; startup tuning
+├── init.el              ; primary configuration
+├── lisp/
+│   └── init-org.el      ; Org-mode and notes setup
+└── backups/             ; auto-generated backup and autosave files
+#+end_example
+
+** Verification Checklist
+- Run `emacs --debug-init` after upgrades to ensure a clean startup
+- Headless sanity check: `emacs -Q --batch -l init.el --eval '(message "init ok")'`
+- Codex package tests live under `lisp/codex.el/`; run `make test` there before shipping changes
+- Confirm required API variables when needed with `emacs --batch -l init.el --eval '(mapc (lambda (var) (message "%s=%s" var (getenv var))) '("OPENAI_API_KEY" "GEMINI_API_KEY")))'`
+
+** Troubleshooting
+- Toggle Vertico (`M-x vertico-mode`) or Corfu (`M-x corfu-mode`) if completion behaves oddly
+- Reinstall tree-sitter grammars with `M-x treesit-install-language-grammar` when adding languages
+- DAP configurations live under project `.vscode/launch.json`; copy them into `.dap.json` if Emacs cannot find them
