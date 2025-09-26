@@ -219,6 +219,10 @@
   :config
   (global-treesit-auto-mode))
 
+(use-package typescript-mode
+  :ensure t
+  :mode "\\.ts\\'")
+
 (use-package vterm
   :ensure t
   :defer t
