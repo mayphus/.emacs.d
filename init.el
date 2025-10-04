@@ -198,9 +198,18 @@
   :defer t
   :hook ((python-mode js-mode typescript-mode typescript-ts-mode go-mode rust-mode) . eglot-ensure))
 
+(defun my/flymake-disable-elisp-byte-compile-in-scratch ()
+  "Disable `elisp-flymake-byte-compile' backend inside the *scratch* buffer."
+  (when (and (derived-mode-p 'lisp-interaction-mode)
+             (string= (buffer-name) "*scratch*"))
+    (setq-local flymake-diagnostic-functions
+                (remq #'elisp-flymake-byte-compile flymake-diagnostic-functions))))
+
 (use-package flymake
   :ensure t
-  :hook (prog-mode . flymake-mode)
+  :hook ((prog-mode . flymake-mode)
+         (lisp-interaction-mode . my/flymake-disable-elisp-byte-compile-in-scratch)
+         (flymake-mode . my/flymake-disable-elisp-byte-compile-in-scratch))
   :custom
   (flymake-no-changes-timeout 0.5)
   (flymake-start-on-flymake-mode t)
